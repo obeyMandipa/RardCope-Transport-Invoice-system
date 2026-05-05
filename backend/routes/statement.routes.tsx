@@ -8,6 +8,6 @@ import { auth } from "../middlewares/auth.middleware";
 const router = Router();
 
 router.use(auth);
-router.get("/:clientId", getStatement);
+router.get("/:clientName", getStatement); // ✅ Changed from clientId to clientName
 
 export default router;

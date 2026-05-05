@@ -2,75 +2,206 @@
 // This file contains the StatementTable component which displays a client's statement of transactions and allows downloading it as a PDF.
 
 import { useState, useEffect } from "react";
-import { useParams } from "react-router-dom";
 import api from "../utils/api";
 import type { StatementRow } from "../types";
 
-export const StatementTable = () => {
-  const { clientId } = useParams<{ clientId: string }>();
-  const [statement, setStatement] = useState<StatementRow[]>([]);
+interface Props {
+  clientName: string; // ✅ Receive clientName prop
+}
+
+interface StatementResponse {
+  client: string;
+  clientId: string;
+  period: { from: string; to: string };
+  totals: {
+    invoices: number;
+    totalAmount: number;
+    totalPaid: number;
+    totalBalance: number;
+  };
+  statement: StatementRow[];
+}
+
+export const StatementTable = ({ clientName }: Props) => {
+  const [data, setData] = useState<StatementResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => {
-    if (clientId) fetchStatement();
-  }, [clientId]);
+    if (clientName) {
+      fetchStatement();
+    }
+  }, [clientName]);
 
   const fetchStatement = async () => {
     setLoading(true);
-    const { data } = await api.get(`/statements/${clientId}`);
-    setStatement(data);
-    setLoading(false);
+    setError("");
+    try {
+      const { data } = await api.get(`/statements/${encodeURIComponent(clientName)}`);
+      setData(data);
+    } catch (err: any) {
+      setError(err.response?.data?.error || "Failed to load statement");
+      console.error("Statement fetch error:", err);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const downloadStatement = () => {
-    // PDF logic here
-    console.log("Download statement for client:", clientId);
-    alert("Statement downloaded (PDF logic to be added)");
+  const downloadStatementPDF = async () => {
+    try {
+      // Backend PDF endpoint (add later)
+      const response = await api.get(`/statements/${encodeURIComponent(clientName)}/pdf`, {
+        responseType: 'blob'
+      });
+      
+      const url = window.URL.createObjectURL(new Blob([response.data]));
+      const link = document.createElement('a');
+      link.href = url;
+      link.setAttribute('download', `statement-${clientName}-${new Date().toISOString().split('T')[0]}.pdf`);
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      // Fallback: Print to PDF
+      window.print();
+    }
   };
 
-  if (!clientId) return <div>Select a client</div>;
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="text-lg text-gray-600">Loading statement...</div>
+      </div>
+    );
+  }
+
+  if (error) {
+    return (
+      <div className="bg-red-50 border border-red-200 rounded-xl p-8 text-center">
+        <div className="text-2xl text-red-600 mb-4">⚠️</div>
+        <h3 className="text-xl font-bold text-red-800 mb-2">Error</h3>
+        <p className="text-red-700 mb-4">{error}</p>
+        <button
+          onClick={fetchStatement}
+          className="bg-red-500 text-white px-6 py-2 rounded-lg hover:bg-red-600"
+        >
+          Try Again
+        </button>
+      </div>
+    );
+  }
+
+  if (!data || data.statement.length === 0) {
+    return (
+      <div className="bg-gradient-to-r from-yellow-50 to-orange-50 p-12 rounded-xl border-2 border-dashed border-yellow-200 text-center">
+        <div className="text-6xl mb-6">📋</div>
+        <h3 className="text-2xl font-bold text-gray-900 mb-2">No Invoices</h3>
+        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+          No invoices found for <strong>"{clientName}"</strong>
+        </p>
+        <button
+          onClick={fetchStatement}
+          className="bg-yellow-500 text-white px-6 py-2 rounded-lg hover:bg-yellow-600"
+        >
+          Refresh
+        </button>
+      </div>
+    );
+  }
+
+  const { client, totals, statement, period } = data;
+  const totalBalance = totals.totalBalance;
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Client Statement</h2>
-        <button
-          onClick={downloadStatement}
-          className="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600"
-        >
-          Download PDF
-        </button>
-      </div>
+      {/* Print-optimized Table */}
+      <div className=" overflow-hidden print:shadow-none print:rounded-none print:border print:border-gray-300">
+        
+        {/* Summary Header */}
+        {/* <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 print:bg-white print:p-6 border-b-2 print:border-gray-300">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm print:text-base">
+            <div>
+              <strong>Statement Period:</strong><br />
+              <span className="font-semibold">{period.from} - {period.to}</span>
+            </div>
+            <div>
+              <strong>Total Invoices:</strong><br />
+              <span className="font-bold text-2xl text-indigo-600">{totals.invoices}</span>
+            </div>
+            <div className="text-right lg:text-left">
+              <strong>Summary:</strong><br />
+              <span className="text-lg">Amount: ${totals.totalAmount.toLocaleString()}</span><br />
+              <span className="text-lg">Paid: ${totals.totalPaid.toLocaleString()}</span><br />
+              <span className={`text-2xl font-black ${totalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+                Balance: ${totalBalance.toLocaleString()}
+              </span>
+            </div>
+          </div>
+        </div> */}
 
-      <div className="bg-white rounded-lg shadow overflow-hidden">
-        <table className="w-full">
-          <thead className="bg-gray-50">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Transaction</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Details</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Amount</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Payment</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Balance</th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {loading ? (
-              <tr>
-                <td colSpan={6} className="px-6 py-4 text-center">Loading...</td>
-              </tr>
-            ) : statement.map((row, i) => (
-              <tr key={i} className="hover:bg-gray-50">
-                <td className="px-6 py-4">{new Date(row.date).toLocaleDateString()}</td>
-                <td className="px-6 py-4 font-medium">{row.transaction}</td>
-                <td className="px-6 py-4">{row.details}</td>
-                <td className="px-6 py-4 text-right">${row.amount.toFixed(2)}</td>
-                <td className="px-6 py-4 text-right">${row.payment.toFixed(2)}</td>
-                <td className="px-6 py-4 text-right font-semibold">${row.balance.toFixed(2)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        {/* Invoices Table */}
+        <div className="overflow-x-auto p-2 mt-[40px]">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b-2 border-gray-200">
+                <tr>
+                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Date</th>
+                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Invoice #</th>
+                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Description</th>
+                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Amount</th>
+                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Payment</th>
+                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Balance</th>
+                </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 bg-white">
+              {statement.map((row, i) => (
+                <tr key={i} className="hover:bg-gray-50 print:hover:bg-white transition-colors h-16">
+                  <td className="px-6 py-4 whitespace-nowrap text-sm  text-gray-900 print:text-base print:py-3">
+                    {new Date(row.date).toLocaleDateString()}
+                  </td>
+                  <td className="px-6 py-4 ">
+                    <span className="text-sm  px-3 py-1 rounded-full text-indigo-800 print:bg-transparent print:px-0 print:font-bold print:text-base">
+                      {row.transaction}
+                    </span>
+                  </td>
+                  <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate print:max-w-none print:text-base">
+                    {row.details}
+                  </td>
+                  <td className="px-6 py-4 text-right text-sm  print:text-base print:font-bold">
+                    ${Number(row.amount).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right text-sm print:text-base print:font-bold">
+                    ${Number(row.payment).toLocaleString()}
+                  </td>
+                  <td className="px-6 py-4 text-right print:text-right">
+                    <span className={` px-3 py-2 rounded-lg print:text-2xl print:py-1 ${
+                      row.balance > 0 
+                    }`}>
+                      ${Number(row.balance).toLocaleString()}
+                    </span>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+          <button
+            onClick={downloadStatementPDF}
+            className="flex-1 lg:flex-none  border-2 bg-gray-300 px-8 py-3 mt-4"
+          >
+            Download PDF
+          </button>
+        </div>
+
+        {/* Print Footer */}
+        {/* <div className="print:block hidden p-12 bg-gradient-to-r from-gray-50 to-white border-t-4 border-gray-200">
+          <div className="text-center">
+            <p className="text-lg font-semibold mb-2">Thank you for your business!</p>
+            <p className="text-sm text-gray-600 mb-4">Generated on {new Date().toLocaleString()}</p>
+            <div className="border-t pt-4">
+              <p className="font-bold text-indigo-600">InvoicePro - Professional Invoicing System</p>
+            </div>
+          </div>
+        </div> */}
       </div>
     </div>
   );

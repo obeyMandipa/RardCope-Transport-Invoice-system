@@ -8,62 +8,198 @@ import type { Invoice } from "../types";
 export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
   const [loading, setLoading] = useState(false);
+  const [viewInvoice, setViewInvoice] = useState<Invoice | null>(null); // ✅ View state
 
   const fetchInvoices = async () => {
     setLoading(true);
-    const { data } = await api.get("/invoices");
-    setInvoices(data);
-    setLoading(false);
+    try {
+      const { data } = await api.get("/invoices");
+      setInvoices(data);
+    } catch (error) {
+      console.error("Failed to fetch invoices");
+    } finally {
+      setLoading(false);
+    }
   };
 
   useEffect(() => {
     fetchInvoices();
-  }, []);
+  }, [onRefresh]);
 
-  const downloadInvoice = async (id: string) => {
-    // For now, just fetch - add PDF download later
-    const { data } = await api.get(`/invoices/${id}`);
-    console.log("Download:", data);
-    alert("Invoice downloaded (PDF logic to be added)");
+  const handleViewInvoice = async (id: string) => {
+    try {
+      const { data } = await api.get(`/invoices/${id}`);
+      setViewInvoice(data);
+    } catch (error) {
+      alert("Failed to load invoice");
+    }
   };
 
+  const handleDownload = async (id: string) => {
+    try {
+      const { data } = await api.get(`/invoices/${id}`);
+      // Simulate PDF download
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `${data.invoiceNumber}.json`;
+      a.click();
+    } catch (error) {
+      alert("Download failed");
+    }
+  };
+
+  if (loading) return <div className="text-center py-8">Loading invoices...</div>;
+
   return (
-    <div className="bg-white rounded-lg shadow overflow-hidden">
-      <table className="w-full">
-        <thead className="bg-gray-50">
-          <tr>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Total</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Balance</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
-          </tr>
-        </thead>
-        <tbody className="divide-y divide-gray-200">
-          {loading ? (
+    <>
+      {/* Invoice Table */}
+      <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+        <table className="w-full">
+          <thead className="bg-gray-50">
             <tr>
-              <td colSpan={6} className="px-6 py-4 text-center">Loading...</td>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
+              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Balance</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
             </tr>
-          ) : invoices.map((invoice) => (
-            <tr key={invoice._id} className="hover:bg-gray-50">
-              <td className="px-6 py-4 font-medium">{invoice.invoiceNumber}</td>
-              <td className="px-6 py-4">{invoice.client.name}</td>
-              <td className="px-6 py-4">${invoice.totalAmount.toFixed(2)}</td>
-              <td className="px-6 py-4 font-semibold">${invoice.balance.toFixed(2)}</td>
-              <td className="px-6 py-4">{new Date(invoice.createdAt).toLocaleDateString()}</td>
-              <td className="px-6 py-4">
+          </thead>
+          <tbody className="divide-y divide-gray-200">
+            {invoices.map((invoice) => (
+              <tr key={invoice._id} className="hover:bg-gray-50">
+                <td className="px-6 py-4 font-mono text-sm font-semibold">
+                  {invoice.invoiceNumber}
+                </td>
+                <td className="px-6 py-4">
+                  <div className="font-medium">{invoice.client.name}</div>
+                  <div className="text-sm text-gray-500">{invoice.client.email}</div>
+                </td>
+                <td className="px-6 py-4 text-right font-semibold text-green-600">
+                  ${invoice.totalAmount.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 text-right font-semibold text-orange-600">
+                  ${invoice.balance.toFixed(2)}
+                </td>
+                <td className="px-6 py-4 text-sm text-gray-500">
+                  {new Date(invoice.createdAt).toLocaleDateString()}
+                </td>
+                <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                  <button
+                    onClick={() => handleViewInvoice(invoice._id)}
+                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    👁️ View
+                  </button>
+                  <button
+                    onClick={() => handleDownload(invoice._id)}
+                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium"
+                  >
+                    📥 Download
+                  </button>
+                </td>
+              </tr>
+            ))}
+          </tbody>
+        </table>
+      </div>
+
+      {/* ✅ VIEW INVOICE MODAL */}
+      {viewInvoice && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
+            <div className="p-8">
+              {/* Header */}
+              <div className="flex justify-between items-start mb-8 border-b pb-6">
+                <div>
+                  <h1 className="mb-2">
+                    Invoice No: {viewInvoice.invoiceNumber}
+                  </h1>
+                  <p className="text-[18px]  mb-1">
+                    {viewInvoice.client.name}
+                  </p>
+                  <p className="">
+                    {viewInvoice.client.email} • {viewInvoice.client.phone}
+                  </p>
+                </div>
+                <div className="text-right ml-8">
+                  BANKING DETAILS <br />
+                  BANK: ZB <br />
+                  ACC NAME: 4125469593405 <br />
+                  BRANCH: WESTGATE <br />
+                  ACCOUNT: 4125469593405 <br />
+                  PHONE: 0779 711 229 <br />
+                </div>
+              </div>
+
+              {/* ✅ ITEMS TABLE - Shows ALL Descriptions */}
+              <div className="mb-8">
+                <h3 className="text-[23px]  mb-4">Invoice Items</h3>
+                <div className="bg-gray-50 rounded-xl overflow-hidden">
+                  <table className="w-full">
+                    <thead className="bg-white">
+                      <tr>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-r-2">Date</th>
+                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-r-2">Description</th>
+                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900 border-r-2">Qty</th>
+                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900 border-r-2">Unit Price</th>
+                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Total</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-gray-200">
+                      {viewInvoice.items.map((item, i) => (
+                        <tr key={i} className="hover:bg-white border-b-2 border-t-2 border-gray-200">
+                          <td className="px-6 py-4  border-r-2">
+                            {new Date(viewInvoice.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="px-6 py-4 border-r-2">
+                            <div className="text-gray-900 ">{item.description}</div>
+                          </td>
+                          <td className="px-6 py-4 text-right  border-r-2">{item.quantity}</td>
+                          <td className="px-6 py-4 text-right border-r-2">
+                            ${item.unitPrice.toFixed(2)}
+                          </td>
+                          <td className="px-6 py-4 text-right  ">
+                            ${item.total.toFixed(2)}
+                          </td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+
+              {/* Footer */}
+              <div className="  mb-8 text-lg">
+                <div className="space-y-2 flex flex-col justify-end items-end">
+                  <div>Paid: <span className="font-semibold">${viewInvoice.paid.toFixed(2)}</span></div>
+                  <div className="text-[20px] border-t pt-2">
+                    Balance: ${viewInvoice.balance.toFixed(2)}
+                  </div>
+                </div>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="flex space-x-4 pt-6 border-t">
                 <button
-                  onClick={() => downloadInvoice(invoice._id)}
-                  className="bg-green-500 text-white px-3 py-1 rounded text-sm hover:bg-green-600 mr-2"
+                  onClick={() => handleDownload(viewInvoice._id)}
+                  className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold text-lg"
                 >
-                  Download
+                  📥 Download PDF
                 </button>
-              </td>
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
+                <button
+                  onClick={() => setViewInvoice(null)}
+                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-8 rounded-xl font-semibold text-lg"
+                >
+                  Close
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+    </>
   );
 };

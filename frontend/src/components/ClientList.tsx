@@ -39,7 +39,7 @@ export const ClientList = () => {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <h2 className="text-2xl font-bold">Clients</h2>
+        <h2 className="text-[]"></h2>
         <button
           onClick={() => setShowForm(true)}
           className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"

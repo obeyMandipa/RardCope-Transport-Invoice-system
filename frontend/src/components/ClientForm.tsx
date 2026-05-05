@@ -52,6 +52,7 @@ export const ClientForm = ({ client, onSuccess }: Props) => {
             value={form.phone || ""}
             onChange={(e) => setForm({ ...form, phone: e.target.value })}
             className="w-full p-2 border rounded"
+            required
           />
         </div>
       </div>
@@ -64,7 +65,6 @@ export const ClientForm = ({ client, onSuccess }: Props) => {
             value={form.email || ""}
             onChange={(e) => setForm({ ...form, email: e.target.value })}
             className="w-full p-2 border rounded"
-            required
           />
         </div>
 

@@ -6,7 +6,7 @@ import { ClientList } from "../components/ClientList";
 export const Clients = () => {
   return (
     <div>
-      <h1 className="text-3xl font-bold mb-8">Clients</h1>
+      <h1 className="text-[40px]">Clients</h1>
       <ClientList />
     </div>
   );
