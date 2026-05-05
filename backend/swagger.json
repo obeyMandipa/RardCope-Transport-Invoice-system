@@ -1,0 +1,262 @@
+{
+  "openapi": "3.0.0",
+  "info": {
+    "title": "Invoicing System API",
+    "version": "1.0.0",
+    "description": "Complete invoicing system with auth, clients, invoices, statements"
+  },
+  "servers": [
+    { "url": "http://localhost:4000/api" }
+  ],
+  "paths": {
+    "/auth/signup": {
+      "post": {
+        "summary": "Register new user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "Rufaro Mandipa" },
+                  "email": { "type": "string", "example": "rufaro@example.com" },
+                  "password": { "type": "string", "example": "password123" }
+                },
+                "required": ["name", "email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "User created"
+          }
+        }
+      }
+    },
+    "/auth/login": {
+      "post": {
+        "summary": "Login user",
+        "tags": ["Auth"],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "email": { "type": "string", "example": "rufaro@example.com" },
+                  "password": { "type": "string", "example": "password123" }
+                },
+                "required": ["email", "password"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "Login successful"
+          }
+        }
+      }
+    },
+    "/clients": {
+      "post": {
+        "summary": "Create client",
+        "tags": ["Clients"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "name": { "type": "string", "example": "ABC Corp" },
+                  "address": { "type": "string", "example": "123 Harare St" },
+                  "phone": { "type": "string", "example": "+263123456" },
+                  "email": { "type": "string", "example": "contact@abc.com" },
+                  "vat": { "type": "string", "example": "VAT123" },
+                  "tin": { "type": "string", "example": "TIN456" }
+                },
+                "required": ["name", "email"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Client created"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all clients",
+        "tags": ["Clients"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of clients"
+          }
+        }
+      }
+    },
+    "/clients/{id}": {
+      "get": {
+        "summary": "Get client by ID",
+        "tags": ["Clients"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client details"
+          }
+        }
+      },
+      "put": {
+        "summary": "Update client",
+        "tags": ["Clients"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client updated"
+          }
+        }
+      },
+      "delete": {
+        "summary": "Delete client",
+        "tags": ["Clients"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Client deleted"
+          }
+        }
+      }
+    },
+    "/invoices": {
+      "post": {
+        "summary": "Create invoice (auto-generates invoice number)",
+        "tags": ["Invoices"],
+        "security": [{ "bearerAuth": [] }],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "client": { "type": "string", "example": "client_id_here" },
+                  "items": {
+                    "type": "array",
+                    "items": {
+                      "type": "object",
+                      "properties": {
+                        "description": { "type": "string", "example": "Web Development" },
+                        "quantity": { "type": "number", "example": 10 },
+                        "unitPrice": { "type": "number", "example": 100 },
+                        "total": { "type": "number", "example": 1000 }
+                      }
+                    }
+                  },
+                  "dueDate": { "type": "string", "format": "date", "example": "2026-06-01" },
+                  "notes": { "type": "string", "example": "50% deposit paid" }
+                },
+                "required": ["client", "items"]
+              }
+            }
+          }
+        },
+        "responses": {
+          "201": {
+            "description": "Invoice created"
+          }
+        }
+      },
+      "get": {
+        "summary": "Get all invoices",
+        "tags": ["Invoices"],
+        "security": [{ "bearerAuth": [] }],
+        "responses": {
+          "200": {
+            "description": "List of invoices"
+          }
+        }
+      }
+    },
+    "/invoices/{id}": {
+      "get": {
+        "summary": "Get invoice by ID",
+        "tags": ["Invoices"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Invoice details"
+          }
+        }
+      }
+    },
+    "/statements/{clientId}": {
+      "get": {
+        "summary": "Get client statement (running balance)",
+        "tags": ["Statements"],
+        "security": [{ "bearerAuth": [] }],
+        "parameters": [
+          {
+            "name": "clientId",
+            "in": "path",
+            "required": true,
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Statement table: Date, Transaction, Details, Amount, Payment, Balance"
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "securitySchemes": {
+      "bearerAuth": {
+        "type": "http",
+        "scheme": "bearer",
+        "bearerFormat": "JWT"
+      }
+    }
+  }
+}
