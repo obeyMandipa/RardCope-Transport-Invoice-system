@@ -1,17 +1,31 @@
 // src/components/InvoiceForm.tsx
 // This file contains the InvoiceForm component which is used to create new invoices in the application.
 
-import { useState } from "react";
+
+import { useState, useEffect } from "react";
 import api from "../utils/api";
-import type { LineItem } from "../types";
+import type { LineItem, Client } from "../types";
+
 
 export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const [form, setForm] = useState({
     client: "",
-    items: [{ description: "", quantity: 1, unitPrice: 0, total: 0 }], // ✅ Add total: 0
+    items: [{ description: "", quantity: 1, unitPrice: 0, total: 0 }],
     dueDate: "",
     notes: "",
   });
+  const [clients, setClients] = useState<Client[]>([]);
+  const [loadingClients, setLoadingClients] = useState(false);
+
+  useEffect(() => {
+    const fetchClients = async () => {
+      setLoadingClients(true);
+      const { data } = await api.get("/clients");
+      setClients(data);
+      setLoadingClients(false);
+    };
+    fetchClients();
+  }, []);
 
   const addItem = () =>
     setForm({ ...form, items: [...form.items, { description: "", quantity: 1, unitPrice: 0, total: 0 }] });
@@ -42,17 +56,20 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
   return (
     <div className="bg-white p-6 rounded-lg shadow">
       <h2 className="text-[25px] mb-4">New Invoice</h2>
-      
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Client Name</label>
-        <input
-          type="text"
-          placeholder="Put client name here"
+        <select
           value={form.client}
           onChange={(e) => setForm({ ...form, client: e.target.value })}
           className="w-full p-2 border rounded"
           required
-        />
+          disabled={loadingClients}
+        >
+          <option value="">{loadingClients ? "Loading clients..." : "Select client..."}</option>
+          {clients.map((client) => (
+            <option key={client._id} value={client.name}>{client.name}</option>
+          ))}
+        </select>
       </div>
 
       <div className="space-y-3 mb-6">

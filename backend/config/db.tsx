@@ -1,4 +1,3 @@
-//
 // db.tsx
 // This file contains the code to connect to the MongoDB database using Mongoose.
 import mongoose from "mongoose";
