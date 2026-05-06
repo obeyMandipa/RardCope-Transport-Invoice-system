@@ -119,7 +119,7 @@ export const StatementTable = ({ clientName }: Props) => {
       <div className=" overflow-hidden print:shadow-none print:rounded-none print:border print:border-gray-300">
         
         {/* Summary Header */}
-        {/* <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 print:bg-white print:p-6 border-b-2 print:border-gray-300">
+        <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 print:bg-white print:p-6 border-b-2 print:border-gray-300">
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 text-sm print:text-base">
             <div>
               <strong>Statement Period:</strong><br />
@@ -138,19 +138,19 @@ export const StatementTable = ({ clientName }: Props) => {
               </span>
             </div>
           </div>
-        </div> */}
+        </div>
 
         {/* Invoices Table */}
         <div className="overflow-x-auto p-2 mt-[40px]">
           <table className="w-full">
             <thead className="bg-gray-50 border-b-2 border-gray-200">
                 <tr>
-                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Date</th>
-                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Invoice #</th>
-                    <th className="px-6 py-4 text-left font-normal uppercase tracking-wide">Description</th>
-                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Amount</th>
-                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Payment</th>
-                    <th className="px-6 py-4 text-right font-normal uppercase tracking-wide">Balance</th>
+                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Date</th>
+                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Invoice #</th>
+                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Description</th>
+                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Amount</th>
+                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Payment</th>
+                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Balance</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">

@@ -4,6 +4,10 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import type { Invoice } from "../types";
+import { IoIosClose } from "react-icons/io";
+import { IoDownloadOutline } from "react-icons/io5";
+
+
 
 export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
   const [invoices, setInvoices] = useState<Invoice[]>([]);
@@ -59,12 +63,12 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left font-normal uppercase">Invoice</th>
-              <th className="px-6 py-3 text-left font-normal uppercase">Client</th>
-              <th className="px-6 py-3 text-right font-normal uppercase">Total</th>
-              <th className="px-6 py-3 text-right font-normal uppercase">Balance</th>
-              <th className="px-6 py-3 text-left font-normal uppercase">Date</th>
-              <th className="px-6 py-3 text-left font-normal uppercase">Actions</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Invoice</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Client</th>
+              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase">Total</th>
+              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase">Balance</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Date</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -109,8 +113,17 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
       {/* ✅ VIEW INVOICE MODAL */}
       {viewInvoice && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
-          <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto rounded-2xl shadow-2xl">
-            <div className="p-8">
+          <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
+            <div className="p-4 ">
+                <div className=" w-full flex justify-end ">
+                <button
+                    onClick={() => setViewInvoice(null)}
+                    className="flex justify-end bg-red-400 p-2 rounded-full text-[20px] static"
+                    >
+                    <IoIosClose />
+                </button>
+                </div> <br />
+                
               {/* Header */}
               <div className="flex justify-between items-start mb-8 border-b pb-6">
                 <div>
@@ -123,14 +136,6 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                   <p className="">
                     {viewInvoice.client.email} • {viewInvoice.client.phone}
                   </p>
-                </div>
-                <div className="text-right ml-8">
-                  BANKING DETAILS <br />
-                  BANK: ZB <br />
-                  ACC NAME: 4125469593405 <br />
-                  BRANCH: WESTGATE <br />
-                  ACCOUNT: 4125469593405 <br />
-                  PHONE: 0779 711 229 <br />
                 </div>
               </div>
 
@@ -181,19 +186,24 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                 </div>
               </div>
 
+              <div className=" ml-8 flex justify-start">
+                <div>
+                    BANKING DETAILS <br />
+                    BANK: ZB <br />
+                    ACC NAME: 4125469593405 <br />
+                    BRANCH: WESTGATE <br />
+                    ACCOUNT: 4125469593405 <br />
+                    PHONE: 0779 711 229 <br />
+                </div>
+                </div>
+
               {/* Action Buttons */}
               <div className="flex space-x-4 pt-6 border-t">
                 <button
                   onClick={() => handleDownload(viewInvoice._id)}
-                  className="flex-1 bg-green-500 hover:bg-green-600 text-white py-3 px-8 rounded-xl font-semibold text-lg"
+                  className="flex justify-center items-center bg-gray-400 py-3 px-8 "
                 >
-                  📥 Download PDF
-                </button>
-                <button
-                  onClick={() => setViewInvoice(null)}
-                  className="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-900 py-3 px-8 rounded-xl font-semibold text-lg"
-                >
-                  Close
+                  <IoDownloadOutline className="text-[25px]" /> Download PDF
                 </button>
               </div>
             </div>
