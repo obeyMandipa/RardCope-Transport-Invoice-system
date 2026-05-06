@@ -54,7 +54,7 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
   const totalAmount = form.items.reduce((sum, item) => sum + item.total, 0);
 
   return (
-    <div className="bg-white p-6 rounded-lg shadow">
+    <div className="bg-white p-6 rounded-lg shadow ">
       <h2 className="text-[25px] mb-4">New Invoice</h2>
       <div className="mb-4">
         <label className="block text-sm font-medium mb-1">Client Name</label>

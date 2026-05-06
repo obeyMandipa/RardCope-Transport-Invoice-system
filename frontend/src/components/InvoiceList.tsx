@@ -53,18 +53,18 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
   if (loading) return <div className="text-center py-8">Loading invoices...</div>;
 
   return (
-    <>
+    <div className="">
       {/* Invoice Table */}
-      <div className="bg-white rounded-lg shadow overflow-hidden mb-8">
+      <div className="bg-white rounded-lg shadow  mb-8">
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Invoice #</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Client</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Total</th>
-              <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase">Balance</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase">Actions</th>
+              <th className="px-6 py-3 text-left font-normal uppercase">Invoice</th>
+              <th className="px-6 py-3 text-left font-normal uppercase">Client</th>
+              <th className="px-6 py-3 text-right font-normal uppercase">Total</th>
+              <th className="px-6 py-3 text-right font-normal uppercase">Balance</th>
+              <th className="px-6 py-3 text-left font-normal uppercase">Date</th>
+              <th className="px-6 py-3 text-left font-normal uppercase">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
@@ -77,10 +77,10 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                   <div className="font-medium">{invoice.client.name}</div>
                   <div className="text-sm text-gray-500">{invoice.client.email}</div>
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-green-600">
+                <td className="px-6 py-4 text-right ">
                   ${invoice.totalAmount.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-right font-semibold text-orange-600">
+                <td className="px-6 py-4 text-right ">
                   ${invoice.balance.toFixed(2)}
                 </td>
                 <td className="px-6 py-4 text-sm text-gray-500">
@@ -89,15 +89,15 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                 <td className="px-6 py-4 whitespace-nowrap space-x-2">
                   <button
                     onClick={() => handleViewInvoice(invoice._id)}
-                    className="bg-blue-500 hover:bg-blue-600 text-white px-3 py-1 rounded text-xs font-medium"
+                    className="text-blue-300 px-3 py-1 rounded font-medium hover:text-blue-600 "
                   >
-                    👁️ View
+                    View
                   </button>
                   <button
                     onClick={() => handleDownload(invoice._id)}
-                    className="bg-green-500 hover:bg-green-600 text-white px-3 py-1 rounded text-xs font-medium"
+                    className="text-green-300 px-3 py-1 rounded font-medium hover:text-green-600"
                   >
-                    📥 Download
+                    Download
                   </button>
                 </td>
               </tr>
@@ -141,10 +141,10 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                   <table className="w-full">
                     <thead className="bg-white">
                       <tr>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-r-2">Date</th>
-                        <th className="px-6 py-4 text-left text-sm font-semibold text-gray-900 border-r-2">Description</th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900 border-r-2">Qty</th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900 border-r-2">Unit Price</th>
+                        <th className="px-6 py-4 text-left uppercase font-normal border-r-2">Date</th>
+                        <th className="px-6 py-4 text-left uppercase font-normal border-r-2">Description</th>
+                        <th className="px-6 py-4 text-right uppercase font-normal border-r-2">Qty</th>
+                        <th className="px-6 py-4 text-right uppercase font-normal border-r-2">Unit Price</th>
                         <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Total</th>
                       </tr>
                     </thead>
@@ -200,6 +200,6 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 };

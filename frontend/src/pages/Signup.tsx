@@ -19,7 +19,7 @@ export const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
+    <div className="min-h-screen w-full flex items-center justify-center">
       <form onSubmit={submit} className="bg-white p-8 rounded-lg shadow w-96">
         <h1 className="text-3xl font-bold mb-6">Sign Up</h1>
         <input
@@ -46,7 +46,7 @@ export const Signup = () => {
           className="w-full p-3 border rounded mb-6"
           required
         />
-        <button type="submit" className="w-full bg-green-500 text-white py-3 rounded">
+        <button type="submit" className="w-full bg-gray-500 text-white py-3 rounded">
           Sign Up
         </button>
         <p className="mt-4 text-center">

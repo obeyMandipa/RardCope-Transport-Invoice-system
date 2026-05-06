@@ -21,8 +21,8 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <form onSubmit={submit} className="bg-white p-8 rounded-lg shadow w-96">
+    <div className="min-h-screen w-full flex items-center justify-center">
+      <form onSubmit={submit} className="bg-white p-8 rounded-lg w-96">
         <h1 className="text-3xl font-bold mb-6">Login</h1>
         <input
           type="email"
@@ -38,7 +38,7 @@ export const Login = () => {
           onChange={(e) => setForm({ ...form, password: e.target.value })}
           className="w-full p-3 border rounded mb-6"
         />
-        <button type="submit" className="w-full bg-blue-500 text-white py-3 rounded">
+        <button type="submit" className="w-full bg-gray-500 text-white py-3 rounded">
           Login
         </button>
         <p className="mt-4 text-center">

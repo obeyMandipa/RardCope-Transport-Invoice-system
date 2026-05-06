@@ -37,12 +37,12 @@ export const ClientList = () => {
   };
 
   return (
-    <div>
-      <div className="flex justify-between items-center mb-6">
+    <div className=" h-[84vh] overflow-y-scroll p-2 ">
+      <div className="  flex justify-between items-center mb-6">
         <h2 className="text-[]"></h2>
         <button
           onClick={() => setShowForm(true)}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          className="bg-gray-300 text-black hover:text-white px-4 py-2 hover:bg-gray-600"
         >
           New Client
         </button>
@@ -53,8 +53,9 @@ export const ClientList = () => {
           <ClientForm client={selectedClient} onSuccess={refresh} />
         </div>
       )}
-
+        <h1 className="text-[22px]">Client list</h1>
       <div className="bg-white rounded-lg shadow overflow-hidden">
+        
         <table className="w-full">
           <thead className="bg-gray-50">
             <tr>

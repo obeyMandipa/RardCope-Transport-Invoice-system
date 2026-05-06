@@ -30,7 +30,7 @@ export const ClientForm = ({ client, onSuccess }: Props) => {
   };
 
   return (
-    <form onSubmit={submit} className="bg-white p-6 rounded-lg shadow">
+    <form onSubmit={submit} className="bg-white p-6 rounded-lg shadow ">
       <h2 className="text-xl font-bold mb-4">{client ? "Edit Client" : "New Client"}</h2>
       
       <div className="grid grid-cols-2 gap-4 mb-4">
@@ -101,7 +101,7 @@ export const ClientForm = ({ client, onSuccess }: Props) => {
 
       <button
         type="submit"
-        className="w-full bg-green-500 text-white py-2 px-4 rounded font-medium hover:bg-green-600"
+        className=" bg-gray-300 hover:text-white py-2 px-4 font-medium hover:bg-gray-600"
       >
         {client ? "Update Client" : "Create Client"}
       </button>

@@ -10,19 +10,21 @@ export const Invoices = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8">
+      <div className="flex justify-between items-center mb-8 ">
         <h1 className="text-[40px] ">Invoices</h1>
         <button
           onClick={() => setShowForm(!showForm)}
-          className="bg-blue-500 text-white px-6 py-2 rounded-lg font-medium hover:bg-blue-600"
+          className="bg-gray-300 text-black hover:text-white px-6 py-2 font-medium hover:bg-gray-600"
         >
           {showForm ? "Cancel" : "New Invoice"}
         </button>
       </div>
-
-      {showForm && <InvoiceForm onSuccess={refresh} />}
+        <div className="overflow-y-scroll h-[80vh]">
+{showForm && <InvoiceForm onSuccess={refresh} />}
 
       <InvoiceList onRefresh={refresh} />
+        </div>
+      
     </div>
   );
 };
