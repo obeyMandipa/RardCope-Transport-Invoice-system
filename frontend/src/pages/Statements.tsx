@@ -38,7 +38,7 @@ export const Statements = () => {
     <div className="w-full pr-8 ">
       <h1 className="text-[40px] mb">Statements</h1>
       
-      <div className="h-[86vh] overflow-y-scroll">
+      <div className="h-[84vh] overflow-y-scroll">
         {/* ✅ Client Selector */}
         <div className="bg-white mt-8">
           <h2 className="text-[22px]">Select Client</h2>

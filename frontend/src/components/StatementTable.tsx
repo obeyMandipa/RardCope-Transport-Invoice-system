@@ -146,8 +146,8 @@ export const StatementTable = ({ clientName }: Props) => {
             <thead className="bg-gray-50 border-b-2 border-gray-200">
                 <tr>
                     <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Date</th>
-                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Invoice #</th>
-                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Description</th>
+                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Transaction</th>
+                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Details</th>
                     <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Amount</th>
                     <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Payment</th>
                     <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Balance</th>
@@ -160,18 +160,18 @@ export const StatementTable = ({ clientName }: Props) => {
                     {new Date(row.date).toLocaleDateString()}
                   </td>
                   <td className="px-6 py-4 ">
-                    <span className="text-sm  px-3 py-1 rounded-full text-indigo-800 print:bg-transparent print:px-0 print:font-bold print:text-base">
-                      {row.transaction}
+                    <span className="text-sm px-3 py-1 rounded-full text-indigo-800 print:bg-transparent print:px-0 print:font-bold print:text-base">
+                        {row.type === "invoice" ? `Invoice (${row.transaction})` : `Payment (${row.invoiceNumber})`}
                     </span>
                   </td>
                   <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate print:max-w-none print:text-base">
                     {row.details}
                   </td>
-                  <td className="px-6 py-4 text-right text-sm  print:text-base print:font-bold">
-                    ${Number(row.amount).toLocaleString()}
+                  <td className="px-6 py-4 text-right print:text-right">
+                    {row.amount === "" ? "" : `$${Number(row.amount).toLocaleString()}`}
                   </td>
-                  <td className="px-6 py-4 text-right text-sm print:text-base print:font-bold">
-                    ${Number(row.payment).toLocaleString()}
+                  <td className="px-6 py-4 text-right print:text-right">
+                    {row.payment === "" ? "" : `$${Number(row.payment).toLocaleString()}`}
                   </td>
                   <td className="px-6 py-4 text-right print:text-right">
                     <span className={` px-3 py-2 rounded-lg print:text-2xl print:py-1 ${

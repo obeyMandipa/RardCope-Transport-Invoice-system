@@ -7,6 +7,8 @@ import { LiaFileInvoiceSolid } from "react-icons/lia";
 import { GoGraph } from "react-icons/go";
 import { FiUsers } from "react-icons/fi";
 import { RiLogoutBoxLine } from "react-icons/ri";
+import { CiMoneyCheck1 } from "react-icons/ci";
+
 
 
 
@@ -14,6 +16,7 @@ const navItems = [
   { path: "/dashboard", icon: <LuLayoutDashboard />, label: "Dashboard" },
   { path: "/invoices", icon: <LiaFileInvoiceSolid />, label: "Invoices" },
   { path: "/statements", icon: <GoGraph />, label: "Statements" },
+  { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
   { path: "/clients", icon: <FiUsers />, label: "Clients" },
 ];
 

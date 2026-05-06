@@ -5,6 +5,10 @@
 import { useState, useEffect } from "react";
 import api from "../utils/api";
 import type { LineItem, Client } from "../types";
+import { IoIosAdd } from "react-icons/io";
+import { IoCreateOutline } from "react-icons/io5";
+
+
 
 
 export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
@@ -82,27 +86,38 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
               className="p-2 border rounded col-span-2"
               required
             />
-            <div className="grid grid-cols-3 gap-1">
-              <input
-                type="number"
-                placeholder="Qty"
-                value={item.quantity}
-                onChange={(e) => updateItem(i, "quantity", parseFloat(e.target.value) || 0)}
-                className="p-2 border rounded text-sm"
-                min="0"
-                step="0.01"
-              />
-              <input
-                type="number"
-                placeholder="$/unit"
-                value={item.unitPrice}
-                onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)}
-                className="p-2 border rounded text-sm"
-                min="0"
-                step="0.01"
-              />
-              <div className="p-2 font-bold text-right bg-white rounded text-sm">
-                ${(item.total || 0).toFixed(2)}
+          <div className="grid grid-cols-3 gap-4 items-start">
+              <div className="flex flex-col">
+                <label className="block text-sm text-gray-700 mb-1">Qty</label>
+                <input
+                  type="number"
+                  placeholder="Qty"
+                  value={item.quantity}
+                  onChange={(e) => updateItem(i, "quantity", parseFloat(e.target.value) || 0)}
+                  className="p-2 border rounded text-sm"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="block text-sm text-gray-700 mb-1">$/unit</label>
+                <input
+                  type="number"
+                  placeholder="$/unit"
+                  value={item.unitPrice}
+                  onChange={(e) => updateItem(i, "unitPrice", parseFloat(e.target.value) || 0)}
+                  className="p-2 border rounded text-sm"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+
+              <div className="flex flex-col">
+                <label className="block text-sm text-gray-700 mb-1">Total</label>
+                <div className="p-2 font-bold text-right bg-white rounded text-sm ">
+                  ${(item.total || 0).toFixed(2)}
+                </div>
               </div>
             </div>
             {form.items.length > 1 && (
@@ -122,9 +137,9 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
         <button
           type="button"
           onClick={addItem}
-          className="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 flex items-center"
+          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center"
         >
-          ➕ Add Item
+          <IoIosAdd className="text-[25px]" /> Add Item
         </button>
         <div className="text-xl font-bold text-blue-600">
           Total: ${totalAmount.toFixed(2)}
@@ -156,9 +171,9 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
       <button
         onClick={submit}
         disabled={!form.client || totalAmount === 0}
-        className="w-full bg-green-500 text-white px-6 py-3 rounded font-semibold hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="flex bg-green-500 text-white px-6 py-3 rounded font-semibold hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
-        ✅ Create & Save Invoice
+        <IoCreateOutline className="text-[25px]" /> Create & Save Invoice
       </button>
     </div>
   );

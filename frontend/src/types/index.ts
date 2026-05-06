@@ -33,8 +33,10 @@ export interface StatementRow {
   date: string;
   transaction: string;
   details: string;
-  amount: number;
-  payment: number;
+  amount: string;
+  payment: string;
+  type: "invoice" | "payment";
+  invoiceNumber: string; // For payments, to show which invoice they relate to
   balance: number;
 }
 

@@ -115,13 +115,13 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-white max-w-4xl w-full max-h-[90vh] overflow-y-auto shadow-2xl">
             <div className="p-4 ">
-                <div className=" w-full flex justify-end ">
-                <button
-                    onClick={() => setViewInvoice(null)}
-                    className="flex justify-end bg-red-400 p-2 rounded-full text-[20px] static"
-                    >
-                    <IoIosClose />
-                </button>
+                <div className=" w-full flex ">
+                  <button
+                      onClick={() => setViewInvoice(null)}
+                      className="flex justify-end bg-red-400 p-2 rounded-full text-[20px] "
+                      >
+                      <IoIosClose />
+                  </button>
                 </div> <br />
                 
               {/* Header */}
@@ -186,7 +186,7 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                 </div>
               </div>
 
-              <div className=" ml-8 flex justify-start">
+              <div className=" ml-8 flex justify-start border-t pt-6">
                 <div>
                     BANKING DETAILS <br />
                     BANK: ZB <br />
@@ -198,7 +198,7 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                 </div>
 
               {/* Action Buttons */}
-              <div className="flex space-x-4 pt-6 border-t">
+              <div className="flex space-x-4 pt-6">
                 <button
                   onClick={() => handleDownload(viewInvoice._id)}
                   className="flex justify-center items-center bg-gray-400 py-3 px-8 "

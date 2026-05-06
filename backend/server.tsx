@@ -10,6 +10,7 @@ import authRoutes from "./routes/auth.routes";
 import clientRoutes from "./routes/client.routes";
 import invoiceRoutes from "./routes/invoice.routes";
 import statementRoutes from "./routes/statement.routes";
+import paymentRoutes from "./routes/payment.routes";
 
 dotenv.config();
 
@@ -23,7 +24,9 @@ connectDB();
 app.use("/api/auth", authRoutes);
 app.use("/api/clients", clientRoutes);
 app.use("/api/invoices", invoiceRoutes);
+
 app.use("/api/statements", statementRoutes);
+app.use("/api/payments", paymentRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
