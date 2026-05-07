@@ -69,7 +69,7 @@ export const getStatement = async (req: Request, res: Response) => {
       rows.push({
         date: pay.date,
         transaction: "Payment",
-        details: pay.method,
+        details: pay.description,
         amount: null,
         payment: pay.amount,
         type: "payment",

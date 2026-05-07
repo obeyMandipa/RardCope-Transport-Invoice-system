@@ -12,7 +12,7 @@ const getValidObjectId = (id: string | string[] | undefined): string | null => {
 };
 
 export const createPayment = async (req: Request, res: Response) => {
-  const { invoiceId, amount, date, method } = req.body;
+  const { invoiceId, amount, date, description} = req.body;
 
   const validId = getValidObjectId(invoiceId);
   if (!validId) {
@@ -28,7 +28,7 @@ export const createPayment = async (req: Request, res: Response) => {
     invoice: new mongoose.Types.ObjectId(validId),
     amount: Number(amount),
     date: date ? new Date(date) : new Date(),
-    method,
+    description: description || "",
   });
 
   await payment.save();

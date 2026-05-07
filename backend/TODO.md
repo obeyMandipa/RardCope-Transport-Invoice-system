@@ -1,8 +1,17 @@
 # PRIORITY 
-- Insert invoice download component
-- change the balance to total 
+- Insert download components
 - edit client not working 
 - cleint form not uploading if email is absent
-- fix the statement table to show the correct columns
-- edit a payment
-- edit and remove an invoice
+- edit a client
+- remove an invoice
+- fuel unit price
+- unit price for loads
+
+# PAGES
+- cash book to record all the cash received
+- loads contains all the loads and can be filtered by the client  
+
+# LATER UPGRADES 
+- unit price fixed for each client
+- drivers page 
+- 

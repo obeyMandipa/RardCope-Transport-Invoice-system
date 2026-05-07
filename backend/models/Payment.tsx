@@ -5,7 +5,7 @@ interface PaymentAttrs {
   invoice: mongoose.Types.ObjectId;
   amount: number;
   date: Date;
-  method: string; // 'cash', 'card', 'bank', 'mpesa'
+  description: string;
   notes?: string;
 }
 
@@ -13,7 +13,7 @@ interface PaymentDoc extends mongoose.Document {
   invoice: mongoose.Types.ObjectId;
   amount: number;
   date: Date;
-  method: string;
+  description: string;
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
@@ -41,10 +41,10 @@ const paymentSchema = new mongoose.Schema(
       required: true,
       default: Date.now
     },
-    method: { 
+    description: { 
       type: String, 
       required: true,
-      enum: ['cash', 'card', 'bank', 'mpesa', 'transfer'] // ✅ Valid methods
+      maxlength: 200 // ✅ Reasonable limit
     },
     notes: { 
       type: String, 

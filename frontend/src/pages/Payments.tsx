@@ -13,7 +13,7 @@ export const Payments = () => {
     invoice: "",
     amount: 0,
     date: "",
-    method: "cash",
+    description: "",
   });
   const [payments, setPayments] = useState<any[]>([]);
 
@@ -36,10 +36,10 @@ export const Payments = () => {
       invoiceId: form.invoice,
       amount: form.amount,
       date: form.date || undefined,
-      method: form.method,
+      description: form.description,
     });
 
-    setForm({ client: "", invoice: "", amount: 0, date: "", method: "cash" });
+    setForm({ client: "", invoice: "", amount: 0, date: "", description: "" });
 
     const { data } = await api.get("/payments");
     setPayments(data);
@@ -123,16 +123,12 @@ export const Payments = () => {
           </div>
 
           <div>
-            <label className="block mb-1">Method</label>
-            <select
-              value={form.method}
-              onChange={(e) => setForm((f) => ({ ...f, method: e.target.value }))}
+            <label className="block mb-1">Description</label>
+            <input
+              value={form.description}
+              onChange={(e) => setForm((f) => ({ ...f, description: e.target.value }))}
               className="w-full p-2 border rounded"
-            >
-              <option value="cash">Cash</option>
-              <option value="bank">Bank</option>
-              <option value="card">Card</option>
-            </select>
+            />
           </div>
         </div>
 
@@ -155,7 +151,7 @@ export const Payments = () => {
               <th className="px-4 py-2 uppercase font-normal text-left">Client</th>
               <th className="px-4 py-2 uppercase font-normal text-left">Invoice</th>
               <th className="px-4 py-2 uppercase font-normal text-left">Amount</th>
-              <th className="px-4 py-2 uppercase font-normal text-left">Method</th>
+              <th className="px-4 py-2 uppercase font-normal text-left">Description</th>
               <th className="px-4 py-2 uppercase font-normal text-left">Action</th>
             </tr>
           </thead>
@@ -167,7 +163,7 @@ export const Payments = () => {
                 <td className="px-6 py-3">{p.invoice?.client?.name || "-"}</td>
                 <td className="px-6 py-3">{p.invoice?.invoiceNumber || "-"}</td>
                 <td className="px-6 py-3">${Number(p.amount).toFixed(2)}</td>
-                <td className="px-6 py-3">{p.method}</td>
+                <td className="px-6 py-3">{p.description}</td>
                 <td className="px-6 py-3">
                   <button
                     onClick={() => deletePayment(p._id)}
