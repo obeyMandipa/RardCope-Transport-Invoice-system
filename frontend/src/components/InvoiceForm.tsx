@@ -114,8 +114,8 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
               </div>
 
               <div className="flex flex-col">
-                <label className="block text-sm text-gray-700 mb-1">Total</label>
-                <div className="p-2 font-bold text-right bg-white rounded text-sm ">
+                <label className="block text-sm text-gray-700 mb-1 ">Total</label>
+                <div className="p-2 font-bold text-right bg-white rounded text-sm border-black  border-b-2">
                   ${(item.total || 0).toFixed(2)}
                 </div>
               </div>
@@ -133,22 +133,22 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
         ))}
       </div>
 
-      <div className="flex justify-between items-center mb-4 p-4 bg-blue-50 rounded-lg">
+      <div className="flex justify-between items-center mb-4 p-4 rounded-lg">
         <button
           type="button"
           onClick={addItem}
-          className="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600 flex items-center"
+          className="bg-gray-500 text-white px-4 py-2  hover:bg-gray-600 flex items-center"
         >
           <IoIosAdd className="text-[25px]" /> Add Item
         </button>
-        <div className="text-xl font-bold text-blue-600">
+        {/* <div className="text-xl font-bold text-blue-600">
           Total: ${totalAmount.toFixed(2)}
-        </div>
+        </div> */}
       </div>
 
       <div className="grid grid-cols-2 gap-4 mb-6">
         <div>
-          <label className="block text-sm font-medium mb-1">Due Date</label>
+          <label className="block text-sm font-medium mb-1">Date created</label>
           <input
             type="date"
             value={form.dueDate}
@@ -171,7 +171,7 @@ export const InvoiceForm = ({ onSuccess }: { onSuccess: () => void }) => {
       <button
         onClick={submit}
         disabled={!form.client || totalAmount === 0}
-        className="flex bg-green-500 text-white px-6 py-3 rounded font-semibold hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
+        className="flex bg-green-500 text-white px-6 py-3  font-semibold hover:bg-green-600 disabled:bg-gray-400 disabled:cursor-not-allowed"
       >
         <IoCreateOutline className="text-[25px]" /> Create & Save Invoice
       </button>

@@ -54,3 +54,15 @@ export interface Expense {
   amount: number;
   createdAt: string;
 }
+
+export interface CashBookEntry {
+  _id: string;
+  type: "primary" | "petty";
+  date: string;
+  description: string;
+  debit: number;
+  credit: number;
+  balance: number;
+  reference?: string;
+  createdAt: string;
+}

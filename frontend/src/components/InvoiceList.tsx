@@ -61,36 +61,36 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
       {/* Invoice Table */}
       <div className="bg-white rounded-lg shadow  mb-8">
         <table className="w-full">
-          <thead className="bg-gray-50">
+          <thead className="bg-gray-50  border-b-2">
             <tr>
-              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Invoice</th>
-              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Client</th>
-              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase">Total</th>
-              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase">Balance</th>
-              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Date</th>
-              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase">Actions</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase border-l-2">Invoice</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase border-l-2">Client</th>
+              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase border-l-2">Total</th>
+              <th className="px-6 py-3 text-gray-500 text-right font-normal uppercase border-l-2">Balance</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase border-l-2">Date</th>
+              <th className="px-6 py-3 text-gray-500 text-left font-normal uppercase border-l-2">Actions</th>
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-200">
             {invoices.map((invoice) => (
               <tr key={invoice._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-mono text-sm font-semibold">
+                <td className="px-6 py-4 border-l-2 font-mono text-sm font-semibold">
                   {invoice.invoiceNumber}
                 </td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 border-l-2">
                   <div className="font-medium">{invoice.client.name}</div>
                   <div className="text-sm text-gray-500">{invoice.client.email}</div>
                 </td>
-                <td className="px-6 py-4 text-right ">
+                <td className="px-6 py-4 text-right border-l-2">
                   ${invoice.totalAmount.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-right ">
+                <td className="px-6 py-4 text-right border-l-2">
                   ${invoice.balance.toFixed(2)}
                 </td>
-                <td className="px-6 py-4 text-sm text-gray-500">
+                <td className="px-6 py-4 text-sm text-gray-500 border-l-2">
                   {new Date(invoice.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap space-x-2">
+                <td className="px-6 py-4 whitespace-nowrap space-x-2 border-l-2">
                   <button
                     onClick={() => handleViewInvoice(invoice._id)}
                     className="text-blue-300 px-3 py-1 rounded font-medium hover:text-blue-600 "

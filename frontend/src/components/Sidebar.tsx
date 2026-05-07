@@ -4,18 +4,21 @@
 import { Link, useLocation } from "react-router-dom";
 import { LuLayoutDashboard } from "react-icons/lu";
 import { LiaFileInvoiceSolid } from "react-icons/lia";
-import { GoGraph } from "react-icons/go";
 import { FiUsers } from "react-icons/fi";
 import { RiLogoutBoxLine } from "react-icons/ri";
 import { CiMoneyCheck1 } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
+import { HiOutlineTableCells } from "react-icons/hi2";
+import { IoMdBook } from "react-icons/io";
+
 
 const navItems = [
   { path: "/dashboard", icon: <LuLayoutDashboard />, label: "Dashboard" },
   { path: "/invoices", icon: <LiaFileInvoiceSolid />, label: "Invoices" },
   { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
   { path: "/expenses", icon: <GiTakeMyMoney className="text-xl"/> , label: "Expenses" },
-  { path: "/statements", icon: <GoGraph />, label: "Statements" },
+  {path: "/cashbooks", icon: <IoMdBook  className="text-xl"/> , label: "Cash Books" },
+  { path: "/statements", icon: <HiOutlineTableCells />, label: "Statements" },
   { path: "/clients", icon: <FiUsers />, label: "Clients" },
 ];
 

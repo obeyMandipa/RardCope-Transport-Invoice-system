@@ -62,7 +62,7 @@ export const Expenses = () => {
         <h1 className="text-[40px] text-gray-900 mb-8">Expenses</h1>
         <div className=" overflow-y-scroll h-[80vh] ">
             {/* Create Expense Form */}
-            <div className="bg-white p-8 w-full shadow-xl mb-8">
+            <div className="bg-white p-8 w-full mb-8">
                 <h2 className="text-[25px] mb-6">Add New Expense</h2>
                 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
@@ -115,7 +115,7 @@ export const Expenses = () => {
                 <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100 border-b">
                 <div className="flex justify-between items-center mb-4">
                     <h2 className="text-[22px] text-gray-900">All Expenses</h2>
-                    <div className="text-2xl font-bold text-red-600">
+                    <div className="text-[22px] border-black border-b-2">
                     Total: ${totalExpenses.toLocaleString()}
                     </div>
                 </div>
@@ -130,27 +130,27 @@ export const Expenses = () => {
                 ) : (
                 <div className="overflow-x-auto">
                     <table className="w-full">
-                    <thead className="text-gray-500">
+                    <thead className="text-gray-500  border-b-2">
                         <tr>
-                        <th className="px-6 py-4 text-left font-normal uppercase tracking-wider">Date</th>
-                        <th className="px-6 py-4 text-left font-normal uppercase tracking-wider">Description</th>
-                        <th className="px-6 py-4 text-right font-normal uppercase tracking-wider">Amount</th>
-                        <th className="px-6 py-4 text-center font-normal uppercase tracking-wider">Action</th>
+                        <th className="px-6 py-4  border-l-2 text-left font-normal uppercase tracking-wider">Date</th>
+                        <th className="px-6 py-4  border-l-2 text-left font-normal uppercase tracking-wider">Description</th>
+                        <th className="px-6 py-4  border-l-2 text-right font-normal uppercase tracking-wider">Amount</th>
+                        <th className="px-6 py-4  border-l-2 text-center font-normal uppercase tracking-wider">Action</th>
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
                         {expenses.map((expense) => (
                         <tr key={expense._id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap ">
+                            <td className="px-6 py-4 whitespace-nowrap  border-l-2">
                             {new Date(expense.date).toLocaleDateString()}
                             </td>
-                            <td className="px-6 py-4 max-w-md truncate">
+                            <td className="px-6 py-4 max-w-md truncate  border-l-2">
                             {expense.description}
                             </td>
-                            <td className="px-6 py-4 text-right">
+                            <td className="px-6 py-4 text-right  border-l-2">
                             ${Number(expense.amount).toLocaleString()}
                             </td>
-                            <td className="px-6 py-4 text-center whitespace-nowrap">
+                            <td className="px-6 py-4 text-center whitespace-nowrap  border-l-2">
                             <button
                                 onClick={() => deleteExpense(expense._id)}
                                 className="text-red-600 hover:text-red-800 font-medium px-4 py-2 rounded-lg hover:bg-red-50 transition-colors"

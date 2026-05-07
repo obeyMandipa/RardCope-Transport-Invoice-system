@@ -12,6 +12,7 @@ import invoiceRoutes from "./routes/invoice.routes";
 import statementRoutes from "./routes/statement.routes";
 import paymentRoutes from "./routes/payment.routes";
 import expenseRoutes from "./routes/expense.routes";
+import cashbookRoutes from "./routes/cashbook.routes";
 
 dotenv.config();
 
@@ -29,6 +30,7 @@ app.use("/api/invoices", invoiceRoutes);
 app.use("/api/statements", statementRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/expenses", expenseRoutes);
+app.use("/api/cashbook", cashbookRoutes);
 
 app.use("/api-docs", swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 

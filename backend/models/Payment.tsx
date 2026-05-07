@@ -7,6 +7,7 @@ interface PaymentAttrs {
   date: Date;
   description: string;
   notes?: string;
+  cashBookDebit?: boolean; // ✅ Track if this payment should create a cash book entry
 }
 
 interface PaymentDoc extends mongoose.Document {
@@ -17,6 +18,7 @@ interface PaymentDoc extends mongoose.Document {
   notes?: string;
   createdAt: Date;
   updatedAt: Date;
+  cashBookDebit: boolean; // ✅ Track if this payment should create a cash book entry
 }
 
 interface PaymentModel extends mongoose.Model<PaymentDoc> {
@@ -49,6 +51,10 @@ const paymentSchema = new mongoose.Schema(
     notes: { 
       type: String, 
       maxlength: 500 // ✅ Reasonable limit
+    },
+    cashBookDebit: { 
+        type: Boolean, 
+        default: false 
     },
   },
   { 

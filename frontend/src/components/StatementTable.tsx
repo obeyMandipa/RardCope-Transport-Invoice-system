@@ -127,13 +127,13 @@ export const StatementTable = ({ clientName }: Props) => {
             </div>
             <div>
               <strong>Total Invoices:</strong><br />
-              <span className="font-bold text-2xl text-indigo-600">{totals.invoices}</span>
+              <span className=" text-2xl text-indigo-600">{totals.invoices}</span>
             </div>
             <div className="text-right lg:text-left">
               <strong>Summary:</strong><br />
               <span className="text-lg">Amount: ${totals.totalAmount.toLocaleString()}</span><br />
               <span className="text-lg">Paid: ${totals.totalPaid.toLocaleString()}</span><br />
-              <span className={`text-2xl font-black ${totalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
+              <span className={`text-2xl font-normal font-black ${totalBalance > 0 ? 'text-red-600' : 'text-green-600'}`}>
                 Balance: ${totalBalance.toLocaleString()}
               </span>
             </div>
@@ -145,35 +145,35 @@ export const StatementTable = ({ clientName }: Props) => {
           <table className="w-full">
             <thead className="bg-gray-50 border-b-2 border-gray-200">
                 <tr>
-                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Date</th>
-                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Transaction</th>
-                    <th className="px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Details</th>
-                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Amount</th>
-                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Payment</th>
-                    <th className="px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Balance</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Date</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Transaction</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-left font-normal uppercase tracking-wide">Details</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Amount</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Payment</th>
+                    <th className=" border-l-2 px-6 py-4 text-gray-500 text-right font-normal uppercase tracking-wide">Balance</th>
                 </tr>
             </thead>
             <tbody className="divide-y divide-gray-200 bg-white">
               {statement.map((row, i) => (
                 <tr key={i} className="hover:bg-gray-50 print:hover:bg-white transition-colors h-16">
-                  <td className="px-6 py-4 whitespace-nowrap text-sm  text-gray-900 print:text-base print:py-3">
+                  <td className="border-l-2 px-6 py-4 whitespace-nowrap text-sm  text-gray-900 print:text-base print:py-3">
                     {new Date(row.date).toLocaleDateString()}
                   </td>
-                  <td className="px-6 py-4 ">
+                  <td className=" border-l-2 px-6 py-4 ">
                     <span className="text-sm px-3 py-1 rounded-full text-indigo-800 print:bg-transparent print:px-0 print:font-bold print:text-base">
                         {row.type === "invoice" ? `Invoice (${row.transaction})` : `Payment (${row.invoiceNumber})`}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-sm text-gray-900 max-w-md truncate print:max-w-none print:text-base">
+                  <td className=" border-l-2 px-6 py-4 text-sm text-gray-900 max-w-md truncate print:max-w-none print:text-base">
                     {row.details}
                   </td>
-                  <td className="px-6 py-4 text-right print:text-right">
+                  <td className=" border-l-2 px-6 py-4 text-right print:text-right">
                     {row.amount === "" ? "" : `$${Number(row.amount).toLocaleString()}`}
                   </td>
-                  <td className="px-6 py-4 text-right print:text-right">
+                  <td className=" border-l-2 px-6 py-4 text-right print:text-right">
                     {row.payment === "" ? "" : `$${Number(row.payment).toLocaleString()}`}
                   </td>
-                  <td className="px-6 py-4 text-right print:text-right">
+                  <td className=" border-l-2 px-6 py-4 text-right print:text-right">
                     <span className={` px-3 py-2 rounded-lg print:text-2xl print:py-1 ${
                       row.balance > 0 
                     }`}>
