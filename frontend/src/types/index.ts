@@ -46,3 +46,11 @@ export interface LineItem {
   unitPrice: number;
   total: number;  
 }
+
+export interface Expense {
+  _id: string;
+  date: string;
+  description: string;
+  amount: number;
+  createdAt: string;
+}

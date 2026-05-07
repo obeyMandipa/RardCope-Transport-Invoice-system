@@ -8,15 +8,14 @@ import { GoGraph } from "react-icons/go";
 import { FiUsers } from "react-icons/fi";
 import { RiLogoutBoxLine } from "react-icons/ri";
 import { CiMoneyCheck1 } from "react-icons/ci";
-
-
-
+import { GiTakeMyMoney } from "react-icons/gi";
 
 const navItems = [
   { path: "/dashboard", icon: <LuLayoutDashboard />, label: "Dashboard" },
   { path: "/invoices", icon: <LiaFileInvoiceSolid />, label: "Invoices" },
-  { path: "/statements", icon: <GoGraph />, label: "Statements" },
   { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
+  { path: "/expenses", icon: <GiTakeMyMoney className="text-xl"/> , label: "Expenses" },
+  { path: "/statements", icon: <GoGraph />, label: "Statements" },
   { path: "/clients", icon: <FiUsers />, label: "Clients" },
 ];
 
