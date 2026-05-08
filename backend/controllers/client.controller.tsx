@@ -2,7 +2,7 @@
 // This file contains the controller functions for managing clients (CRUD operations).
 
 import { Request, Response } from "express";
-import { Client } from "../models/client";
+import { Client } from "../models/Client";
 
 export const createClient = async (req: Request, res: Response) => {
   const client = Client.build(req.body);

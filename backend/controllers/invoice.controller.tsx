@@ -4,7 +4,7 @@
 // invoice.controller.ts
 import { Request, Response } from "express";
 import { Invoice } from "../models/Invoice";
-import { Client } from "../models/client"; // ✅ Fixed import path
+import { Client } from "../models/Client"; // ✅ Fixed import path
 import { generateInvoiceNumber } from "../utils/invoiceNumber";
 
 export const createInvoice = async (req: Request, res: Response) => { // ✅ Complete function wrapper

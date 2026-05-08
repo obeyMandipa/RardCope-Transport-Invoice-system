@@ -10,6 +10,8 @@ import { CiMoneyCheck1 } from "react-icons/ci";
 import { GiTakeMyMoney } from "react-icons/gi";
 import { HiOutlineTableCells } from "react-icons/hi2";
 import { IoMdBook } from "react-icons/io";
+import { TbReportSearch } from "react-icons/tb";
+
 
 
 const navItems = [
@@ -18,8 +20,9 @@ const navItems = [
   { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
   { path: "/expenses", icon: <GiTakeMyMoney className="text-xl"/> , label: "Expenses" },
   {path: "/cashbooks", icon: <IoMdBook  className="text-xl"/> , label: "Cash Books" },
-  { path: "/statements", icon: <HiOutlineTableCells />, label: "Statements" },
-  { path: "/clients", icon: <FiUsers />, label: "Clients" },
+  { path: "/statements", icon: <HiOutlineTableCells className="text-xl"/>, label: "Statements" },
+  { path: "/clients", icon: <FiUsers className="text-xl"/>, label: "Clients" },
+  { path: "/reports", icon: <TbReportSearch className="text-xl" />, label: "Reports" },
 ];
 
 export const Sidebar = () => {

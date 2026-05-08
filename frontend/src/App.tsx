@@ -12,6 +12,7 @@ import { Sidebar } from "./components/Sidebar";
 import { Payments } from "./pages/Payments";
 import { Expenses } from "./pages/Expenses";
 import { CashBooks } from "./pages/CashBooks";
+import {Reports} from "./pages/Report";
 
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
   const token = localStorage.getItem("token");
@@ -40,6 +41,7 @@ export default function App() {
                       <Route path="/clients" element={<Clients />} />
                       <Route path="/expenses" element={<Expenses />} />
                       <Route path="/cashbooks" element={<CashBooks />} />
+                      <Route path="/reports" element={<Reports />} />
                       <Route path="/" element={<Navigate to="/dashboard" />} />
                     </Routes>
                   </div>

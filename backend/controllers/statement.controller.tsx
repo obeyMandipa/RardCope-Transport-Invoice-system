@@ -2,7 +2,7 @@
 
 import { Request, Response } from "express";
 import { Invoice } from "../models/Invoice";
-import { Client } from "../models/client";
+import { Client } from "../models/Client";
 import { Payment } from "../models/Payment";
 
 export const getStatement = async (req: Request, res: Response) => {

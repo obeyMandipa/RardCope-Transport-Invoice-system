@@ -75,4 +75,7 @@ const Invoice = mongoose.model<InvoiceDoc, InvoiceModel>(
   invoiceSchema
 );
 
+invoiceSchema.index({ "client": 1, "createdAt": 1 });
+// invoiceSchema.index({ "invoiceNumber": 1 });
+
 export { Invoice };

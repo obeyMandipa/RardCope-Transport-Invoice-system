@@ -41,6 +41,9 @@ const cashBookSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
+cashBookSchema.index({ "type": 1, "date": 1 });
+cashBookSchema.index({ "reference": "text" }); // Text search for client names
+
 cashBookSchema.statics.build = function (attrs: CashBookAttrs) {
   return new this(attrs);
 };
