@@ -21,8 +21,8 @@ export const Login = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center">
-      <form onSubmit={submit} className="bg-white p-8 rounded-lg w-96">
+    <div className="min-h-screen w-full flex items-center justify-center  bg-red-50">
+      <form onSubmit={submit} className="bg-white p-8 rounded-lg w-96 border-2 shadow-xl">
         <h1 className="text-3xl font-bold mb-6">Login</h1>
         <input
           type="email"

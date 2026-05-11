@@ -40,27 +40,27 @@ export const Dashboard = () => {
       
       <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Invoices</h3>
-          <p className="text-3xl font-bold text-blue-600">{stats.totalInvoices}</p>
+          <h3 className="text-[22px] text-gray-900 mb-1">Total Invoices</h3>
+          <p className="text-[30px] text-blue-600">{stats.totalInvoices}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Clients</h3>
-          <p className="text-3xl font-bold text-green-600">{stats.totalClients}</p>
+          <h3 className="text-[22px] text-gray-900 mb-1">Total Clients</h3>
+          <p className="text-[30px] text-green-600">{stats.totalClients}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Total Revenue</h3>
-          <p className="text-3xl font-bold text-purple-600">${stats.totalRevenue.toFixed(2)}</p>
+          <h3 className="text-[22px] text-gray-900 mb-1">Total Revenue</h3>
+          <p className="text-[30px] text-purple-600">${stats.totalRevenue.toFixed(2)}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
-          <h3 className="text-lg font-semibold text-gray-900 mb-1">Pending</h3>
-          <p className="text-3xl font-bold text-red-600">${stats.pending.toFixed(2)}</p>
+          <h3 className="text-[22px] text-gray-900 mb-1">Pending</h3>
+          <p className="text-[30px] text-red-600">${stats.pending.toFixed(2)}</p>
         </div>
       </div>
-
+{/* 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-white p-6 rounded-lg shadow">
           <h3 className="text-xl font-bold mb-4">Recent Invoices</h3>
-          {/* Mini invoice list */}
+          
           <p className="text-gray-500">Recent activity will show here</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow">
@@ -74,7 +74,7 @@ export const Dashboard = () => {
             </a>
           </div>
         </div>
-      </div>
+      </div> */}
     </div>
   );
 };

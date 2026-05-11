@@ -61,7 +61,7 @@ export const CashBooks = () => {
 
   return (
     <div className="">
-      <h1 className="text-4xl font-bold text-gray-900 mb-4">Cash Books</h1>
+      <h1 className="text-[40px] mb-4">Cash Books</h1>
 
       <div className="flex w-[500px] p-1 mb-4">
         <button
@@ -86,7 +86,7 @@ export const CashBooks = () => {
         </button>
       </div>
 
-      <div className="overflow-y-scroll h-[77vh]">
+      <div className="overflow-y-scroll h-[75vh]">
         {activeTab === "petty" ? (
           <div className="bg-white p-8  mb-8">
             <h2 className="text-2xl font-semibold mb-6">Petty Cash Book Entry</h2>
@@ -166,10 +166,10 @@ export const CashBooks = () => {
             </button>
           </div>
         ) : (
-          <div className="bg-blue-50 border border-blue-200 p-6 rounded-xl mb-8">
-            <h2 className="text-xl font-semibold text-blue-900 mb-2">Primary Cash Book</h2>
-            <p className="text-blue-800">
-              Primary cash book entries are created automatically from payments. No manual entry form is available here.
+          <div className="bg-gray-200 border border-gray-200 p-6 mb-8">
+            <h2 className="text-xl mb-2">Primary Cash Book</h2>
+            <p className="text-red-900">
+              Primary cash book entries are created automatically from payments.
             </p>
           </div>
         )}
@@ -177,14 +177,14 @@ export const CashBooks = () => {
         <div className="bg-white overflow-hidden">
           <div className="p-8 bg-gradient-to-r from-gray-50 to-gray-100">
             <div className="flex justify-between items-center">
-              <h2 className="text-2xl font-bold text-gray-900">
+              <h2 className="text-2xl text-gray-900">
                 {activeTab === "primary" ? "Primary" : "Petty"} Cash Book
               </h2>
               <div className="text-right space-y-1">
                 <div className="text-lg">Total Debit: ${totalDebit.toLocaleString()}</div>
                 <div className="text-lg">Total Credit: ${totalCredit.toLocaleString()}</div>
                 <div
-                  className={`text-[22px] font-normal font-black ${
+                  className={`text-[22px] font-normal ${
                     finalBalance >= 0 ? "text-green-600" : "text-red-600"
                   }`}
                 >
@@ -205,25 +205,25 @@ export const CashBooks = () => {
               <table className="w-full">
                 <thead className="border-b-2">
                   <tr>
-                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm uppercase tracking-wider">
                       Date
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm uppercase tracking-wider">
                       Description
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm  uppercase tracking-wider">
                       Reference
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm  uppercase tracking-wider">
                       Debit
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm uppercase tracking-wider">
                       Credit
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-right text-sm uppercase tracking-wider">
                       Balance
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-center text-sm font-bold uppercase tracking-wider">
+                    <th className="px-6 py-4 border-l-2 font-normal text-center text-sm  uppercase tracking-wider">
                       Action
                     </th>
                   </tr>

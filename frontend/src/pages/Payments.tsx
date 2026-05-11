@@ -67,11 +67,12 @@ export const Payments = () => {
   const filteredInvoices = invoices.filter((inv) => inv.client.name === form.client);
 
   return (
-    <div className="p-8 overflow-y-scroll h-[94vh]">
+    <div className="  ">
       <h1 className="text-[40px] mb-6">Invoice Payments</h1>
 
-      <div className="bg-white p-6  mb-8">
-        <h2 className="text-xl font-semibold mb-4">Create Payment</h2>
+      <div className="overflow-y-scroll h-[80vh]">
+        <div className="bg-white p-6  mb-8">
+        <h2 className="text-[22px] mb-4">Create Payment</h2>
 
         <div className="grid grid-cols-2 gap-4 mb-4">
           <div>
@@ -149,7 +150,7 @@ export const Payments = () => {
               onChange={(e) => setForm((f) => ({ ...f, cashBookDebit: e.target.checked }))}
               className="w-5 h-5 text-green-300 border-gray-300 rounded focus:ring-green-500"
             />
-            <label htmlFor="cashBookDebit" className="ml-2 block text-green-600 uppercase text-gray-900">
+            <label htmlFor="cashBookDebit" className="ml-2 block  uppercase text-gray-900">
                 Debit (Primary Cash Book)
             </label>
           </div>
@@ -158,14 +159,14 @@ export const Payments = () => {
         <button
           onClick={submit}
           disabled={!form.invoice || !form.amount}
-          className="bg-green-500 text-white px-6 py-2 rounded font-semibold hover:bg-green-600 disabled:bg-gray-400"
+          className="bg-green-500 text-white px-6 py-2 hover:bg-green-600 disabled:bg-gray-400"
         >
           Save Payment
         </button>
       </div>
 
       <div className="bg-white p-6">
-        <h2 className="text-[22px] text-normal mb-4">All Payments</h2>
+        <h2 className="text-[22px]  mb-4">All Payments</h2>
 
         <table className="w-full">
           <thead className="bg-gray-50 text-gray-500  border-b-2">
@@ -209,6 +210,7 @@ export const Payments = () => {
             ))}
           </tbody>
         </table>
+      </div>
       </div>
     </div>
   );

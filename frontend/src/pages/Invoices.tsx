@@ -10,7 +10,7 @@ export const Invoices = () => {
 
   return (
     <div>
-      <div className="flex justify-between items-center mb-8 ">
+      <div className="flex justify-between items-center mb-8">
         <h1 className="text-[40px] ">Invoices</h1>
         <button
           onClick={() => setShowForm(!showForm)}

@@ -19,8 +19,8 @@ export const Signup = () => {
   };
 
   return (
-    <div className="min-h-screen w-full flex items-center justify-center">
-      <form onSubmit={submit} className="bg-white p-8 rounded-lg shadow w-96">
+    <div className="min-h-screen w-full flex items-center justify-center bg-red-50 ">
+      <form onSubmit={submit} className="bg-white p-8 rounded-lg shadow-xl w-96">
         <h1 className="text-3xl font-bold mb-6">Sign Up</h1>
         <input
           type="text"

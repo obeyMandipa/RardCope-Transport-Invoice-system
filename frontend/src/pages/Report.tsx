@@ -71,41 +71,46 @@ export const Reports = () => {
   }, [activeReport, filters]);
 
   return (
-    <div className="p-8 max-w-7xl mx-auto">
-      <h1 className="text-4xl font-bold text-gray-900 mb-8">Reports</h1>
+    <div className="">
+        <div className="">
+             <h1 className="text-[40px]  mb-8">Reports</h1>
 
-      {/* Report Tabs */}
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-2 mb-8">
-        {[
-          { id: "statements", label: "Running Statements" },
-          { id: "primary", label: "Primary Cash Book" },
-          { id: "petty", label: "Petty Cash Book" },
-          { id: "loads", label: "Loads" },
-          { id: "invoices", label: "Invoices" }
-        ].map(tab => (
-          <button
-            key={tab.id}
-            onClick={() => setActiveReport(tab.id as any)}
-            className={`p-4 rounded-xl font-semibold transition-all ${
-              activeReport === tab.id
-                ? "bg-gradient-to-r from-indigo-500 to-purple-600 text-white shadow-xl"
-                : "bg-white border-2 border-gray-200 hover:border-indigo-300 text-gray-700 hover:bg-gray-50"
-            }`}
-          >
-            {tab.label}
-          </button>
-        ))}
-      </div>
+            <div className=" mb-4 space-x-4">
+                {[
+                { id: "statements", label: "Running Statements" },
+                { id: "primary", label: "Primary Cash Book" },
+                { id: "petty", label: "Petty Cash Book" },
+                { id: "loads", label: "Loads" },
+                { id: "invoices", label: "Invoices" }
+                ].map(tab => (
+                <button
+                    key={tab.id}
+                    onClick={() => setActiveReport(tab.id as any)}
+                    className={`p-2 w-[200px] font-semibold transition-all ${
+                    activeReport === tab.id
+                        ? " text-white bg-red-900"
+                        : "bg-white  text-gray-700 hover:text-red-900 hover:bg-gray-50"
+                    }`}
+                >
+                    {tab.label}
+                </button>
+                ))}
+            </div>
+        </div>
+
+      <div className=" overflow-y-scroll h-[70vh] ">
+        {/* Report Tabs */}
+     
 
       {/* Filters */}
-      <div className="bg-white p-6 rounded-2xl shadow-xl mb-8">
+      <div className="bg-white p-6  mb-8">
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-2">Client</label>
             <select
               value={filters.client || ""}
               onChange={(e) => updateFilter("client", e.target.value)}
-              className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+              className="w-full p-3 border border-gray-300 "
             >
               <option value="">All Clients</option>
               {clients.map(client => (
@@ -124,7 +129,7 @@ export const Reports = () => {
                   type="date"
                   value={filters.startDate || ""}
                   onChange={(e) => updateFilter("startDate", e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-3 border border-gray-300 focus:ring-2 "
                 />
               </div>
               <div>
@@ -133,7 +138,7 @@ export const Reports = () => {
                   type="date"
                   value={filters.endDate || ""}
                   onChange={(e) => updateFilter("endDate", e.target.value)}
-                  className="w-full p-3 border border-gray-300 rounded-xl focus:ring-2 focus:ring-indigo-500"
+                  className="w-full p-3 border border-gray-300  focus:ring-2 "
                 />
               </div>
             </>
@@ -149,7 +154,7 @@ export const Reports = () => {
           </h2>
           <button
             onClick={() => downloadPDF(activeReport)}
-            className="flex items-center gap-2 bg-gradient-to-r from-indigo-500 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all"
+            className="flex items-center gap-2   px-6 py-3 bg-gray-300 hover:bg-gray-600 hover:text-white"
           >
             <IoDownloadOutline className="text-xl" />
             Download PDF
@@ -173,9 +178,9 @@ export const Reports = () => {
                   <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
                     Description / Invoice
                   </th>
-                  <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
+                  {/* <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
                     Client / Reference
-                  </th>
+                  </th> */}
                   <th className="px-6 py-4 text-right text-sm font-bold text-gray-900 uppercase tracking-wider">
                     Debit
                   </th>
@@ -196,9 +201,9 @@ export const Reports = () => {
                     <td className="px-6 py-4 text-sm text-gray-900 max-w-md">
                       {row.description || row.invoiceNumber || "-"}
                     </td>
-                    <td className="px-6 py-4 text-sm text-gray-600">
+                    {/* <td className="px-6 py-4 text-sm text-gray-600">
                       {row.clientName || row.reference || row.client?.name || "-"}
-                    </td>
+                    </td> */}
                     <td className="px-6 py-4 text-right text-sm font-medium text-green-600">
                       ${Number(row.debit || row.amount || 0).toLocaleString()}
                     </td>
@@ -214,6 +219,7 @@ export const Reports = () => {
             </table>
           </div>
         )}
+      </div>
       </div>
     </div>
   );

@@ -1,7 +1,6 @@
 // controllers/payment.controller.tsx
 // Controller functions for managing payments (create, list, filter by invoice).
 
-// controllers/payment.controller.ts
 import { Request, Response } from "express";
 import mongoose from "mongoose";
 import { Payment } from "../models/Payment";

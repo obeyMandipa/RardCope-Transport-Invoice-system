@@ -15,8 +15,8 @@ import { TbReportSearch } from "react-icons/tb";
 
 
 const navItems = [
-  { path: "/dashboard", icon: <LuLayoutDashboard />, label: "Dashboard" },
-  { path: "/invoices", icon: <LiaFileInvoiceSolid />, label: "Invoices" },
+  { path: "/dashboard", icon: <LuLayoutDashboard className="text-xl" />, label: "Dashboard" },
+  { path: "/invoices", icon: <LiaFileInvoiceSolid className="text-xl" />, label: "Invoices" },
   { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
   { path: "/expenses", icon: <GiTakeMyMoney className="text-xl"/> , label: "Expenses" },
   {path: "/cashbooks", icon: <IoMdBook  className="text-xl"/> , label: "Cash Books" },
