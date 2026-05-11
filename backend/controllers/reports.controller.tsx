@@ -1,6 +1,7 @@
 // backend/controllers/reports.controller.tsx
 // This file contains the Express controllers for generating various financial reports (statements, cash books, loads, invoices) and downloading them as PDFs.
 
+// backend/controllers/reports.controller.tsx
 import { Request, Response } from "express";
 import { Invoice } from "../models/Invoice";
 import { Payment } from "../models/Payment";
@@ -20,7 +21,6 @@ interface ReportEntry {
 
 const formatCurrency = (amount: number): string => Number(amount).toFixed(2);
 
-// ✅ Helper function to safely create ReportEntry
 const createReportEntry = (data: any): ReportEntry => ({
   date: data.date || new Date().toISOString().split('T')[0],
   description: (data.description || data.invoiceNumber || "N/A").toString(),
@@ -31,55 +31,104 @@ const createReportEntry = (data: any): ReportEntry => ({
   balance: Number(data.balance) || 0
 });
 
-// ✅ 1. Running Statements - Fixed aggregation pipeline
+// ✅ FIXED: Running Statements - Pure Mongoose (no aggregation)
 const getRunningStatementsData = async (query: any): Promise<ReportEntry[]> => {
   const { client, startDate, endDate } = query;
   
-  const match: any = { client: { $exists: true } };
-  if (client) match.client = client;
+  // Client filter
+  const clientMatch: any = client ? { client: client } : { client: { $exists: true } };
+  
+  // Date filter
+  const dateFilter: any = {};
   if (startDate || endDate) {
-    match.createdAt = {};
-    if (startDate) match.createdAt.$gte = new Date(startDate as string);
-    if (endDate) match.createdAt.$lte = new Date((endDate as string) + "T23:59:59Z");
+    dateFilter.createdAt = {};
+    if (startDate) dateFilter.createdAt.$gte = new Date(startDate as string);
+    if (endDate) dateFilter.createdAt.$lte = new Date((endDate as string) + "T23:59:59Z");
   }
 
-  const invoices = await Invoice.aggregate([
-    { $match: match },
-    { 
-      $lookup: { 
-        from: "payments", 
-        localField: "_id", 
-        foreignField: "invoice", 
-        as: "payments" 
-      } 
-    },
-    {
-      $addFields: {
-        paid: { $sum: { $ifNull: ["$payments.amount", 0] } },
-        balance: { $subtract: ["$totalAmount", { $sum: { $ifNull: ["$payments.amount", 0] } }] }
-      }
-    },
-    {
-      $project: {
-        date: { $dateToString: { format: "%Y-%m-%d", date: "$createdAt" } },
-        description: "$invoiceNumber",
-        clientName: { $ifNull: ["$client.name", "Unknown"] },
-        debit: 0,
-        credit: "$totalAmount",
-        balance: "$balance"
-      }
-    },
-    { $sort: { date: 1 } }
-  ]);
+  // ✅ Use Mongoose find() instead of aggregation to avoid projection issues
+  const invoices = await Invoice.find({ ...clientMatch, ...dateFilter })
+    .populate("client", "name")
+    .sort({ createdAt: 1 });
 
-  return invoices.map((inv: any) => createReportEntry({
-    ...inv,
-    description: inv.description,
-    clientName: inv.clientName
+  const invoiceIds = invoices.map((inv: any) => inv._id);
+  
+  // Filter payments by date if specified
+  const paymentFilter: any = { invoice: { $in: invoiceIds } };
+  if (startDate || endDate) {
+    paymentFilter.date = {};
+    if (startDate) paymentFilter.date.$gte = new Date(startDate as string);
+    if (endDate) paymentFilter.date.$lte = new Date((endDate as string) + "T23:59:59Z");
+  }
+
+  const payments = await Payment.find(paymentFilter).sort({ date: 1 });
+
+  // Build chronological rows
+  const rows: any[] = [];
+  
+  for (const inv of invoices) {
+    rows.push({
+      date: inv.createdAt,
+      transaction: inv.invoiceNumber,
+      details: inv.items.map((item: any) => item.description).join(", ") || "Invoice",
+      amount: inv.totalAmount,
+      payment: null,
+      type: "invoice",
+      clientName: (inv.client as any)?.name
+    });
+
+    const invPayments = payments.filter((p: any) => 
+      p.invoice.toString() === inv._id.toString()
+    );
+
+    for (const pay of invPayments) {
+      rows.push({
+        date: pay.date,
+        transaction: "Payment",
+        details: pay.description || "Payment received",
+        amount: null,
+        payment: pay.amount,
+        type: "payment",
+        clientName: (inv.client as any)?.name
+      });
+    }
+  }
+
+  // Sort chronologically
+  rows.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+  // Calculate running balance
+  let runningBalance = 0;
+  const statement = rows.map((row: any) => {
+    if (row.type === "invoice") {
+      runningBalance += Number(row.amount || 0);
+    } else if (row.type === "payment") {
+      runningBalance -= Number(row.payment || 0);
+    }
+
+    return {
+      date: new Date(row.date).toISOString().split("T")[0],
+      transaction: row.transaction,
+      details: row.details,
+      amount: row.amount,
+      payment: row.payment,
+      balance: runningBalance,
+      type: row.type,
+      clientName: row.clientName
+    };
+  });
+
+  return statement.map((row: any) => createReportEntry({
+    date: row.date,
+    description: `${row.transaction}: ${row.details}`,
+    clientName: row.clientName,
+    debit: row.amount || 0,
+    credit: row.payment || 0,
+    balance: row.balance
   }));
 };
 
-// ✅ 2. Primary Cash Book
+// ✅ 2. Primary Cash Book (unchanged)
 const getPrimaryCashBookData = async (query: any): Promise<ReportEntry[]> => {
   const { client } = query;
   
@@ -102,7 +151,7 @@ const getPrimaryCashBookData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ 3. Petty Cash Book
+// ✅ 3. Petty Cash Book (unchanged)
 const getPettyCashBookData = async (query: any): Promise<ReportEntry[]> => {
   const { client } = query;
   
@@ -125,7 +174,7 @@ const getPettyCashBookData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ 4. Loads Report
+// ✅ 4. Loads Report (unchanged)
 const getLoadsReportData = async (query: any): Promise<ReportEntry[]> => {
   const { client, startDate, endDate } = query;
 
@@ -174,7 +223,7 @@ const getLoadsReportData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ 5. Invoices Report
+// ✅ 5. Invoices Report (unchanged)
 const getInvoicesReportData = async (query: any): Promise<ReportEntry[]> => {
   const { client, startDate, endDate } = query;
 
@@ -201,7 +250,7 @@ const getInvoicesReportData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ Export controllers
+// ✅ Controllers & PDF (unchanged)
 export const getRunningStatements = async (req: Request, res: Response) => {
   const data = await getRunningStatementsData(req.query);
   res.json(data);
@@ -227,7 +276,6 @@ export const getInvoicesReport = async (req: Request, res: Response) => {
   res.json(data);
 };
 
-// ✅ PDF Generator
 export const generatePDFReport = async (req: Request, res: Response) => {
   const { type } = req.params as { type: string };
   const { client, startDate, endDate } = req.query;
@@ -264,7 +312,7 @@ export const generatePDFReport = async (req: Request, res: Response) => {
 
     doc.pipe(res);
 
-    // Header
+    // Header (unchanged)
     doc.fontSize(20).text(`${type.toUpperCase()} REPORT`, 50, 50);
     doc.fontSize(12).text(`Generated: ${new Date().toLocaleString()}`, 50, 80);
 
