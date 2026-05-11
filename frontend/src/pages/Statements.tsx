@@ -5,6 +5,7 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import type { Client } from "../types";
 import { StatementTable } from "../components/StatementTable";
+import header from "../assets/header.png";
 
 export const Statements = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -36,6 +37,14 @@ export const Statements = () => {
 
   return (
     <div className="w-full pr-8 ">
+
+      <div className="header border-2 bg-red-400 w-full mb-8">
+
+        <header className="bg-gray-900 text-white shadow-md">
+          <img src={header} alt="Header" className="fill justify-center" />
+        </header>
+        
+      </div>
       <h1 className="text-[40px] mb">Statements</h1>
       
       <div className="h-[84vh] overflow-y-scroll">
@@ -79,6 +88,7 @@ export const Statements = () => {
           )}
         </div>
       </div>
+      
     </div>
   );
 };

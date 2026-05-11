@@ -75,9 +75,9 @@ export const Reports = () => {
 
         <div className="mb-4 space-x-4">
           {[
-            { id: "statements", label: "Running Statements" },
-            { id: "primary", label: "Primary Cash Book" },
-            { id: "petty", label: "Petty Cash Book" },
+            { id: "running statements", label: "Running Statements" },
+            { id: "cashbook", label: "Primary Cash Book" },
+            { id: "petty cashbook", label: "Petty Cash Book" },
             { id: "loads", label: "Loads" },
             { id: "invoices", label: "Invoices" }
           ].map(tab => (
@@ -142,7 +142,7 @@ export const Reports = () => {
         </div>
 
         {/* Report Table */}
-        <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
+        <div className="bg-white   overflow-hidden">
           <div className="p-6 bg-gradient-to-r from-gray-50 to-gray-100 border-b flex justify-between items-center">
             <h2 className="text-2xl font-bold text-gray-900 capitalize">
               {activeReport.replace('_', ' ')}
@@ -165,51 +165,123 @@ export const Reports = () => {
           ) : (
             <div className="overflow-x-auto">
               <table className="w-full">
-                <thead className="bg-gray-50">
+                <thead className="text-gray-500  bg-gray-50">
                   <tr>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-4 text-left text-sm font-bold text-gray-900 uppercase tracking-wider">
-                      Transaction / Invoice
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-bold text-gray-900 uppercase tracking-wider">
-                      Amount
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-bold text-gray-900 uppercase tracking-wider">
-                      Payment
-                    </th>
-                    <th className="px-6 py-4 text-right text-sm font-bold text-gray-900 uppercase tracking-wider">
-                      Balance
-                    </th>
+                    {activeReport === "loads" ? (
+                      <>
+                        <th className="border-l-2 px-6 py-4 text-left  font-normal uppercase tracking-wider">
+                          Date
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-left font-normal text-gray-900 uppercase tracking-wider">
+                          Client Name
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-left font-normaluppercase tracking-wider">
+                          Description
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-rightnormal font-normal uppercase tracking-wider">
+                          Quantity
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-right font-normal uppercase tracking-wider">
+                          Unit Price
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-right font-normal0 uppercase tracking-wider">
+                          Total
+                        </th>
+                      </>
+                    ) : (
+                      <>
+                        <th className="border-l-2 px-6 py-4 text-left font-normal uppercase ">
+                          Date
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-left font-normal uppercase">
+                          Transaction / Invoice
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-right font-normal uppercase tracking-wider">
+                          Amount
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-right font-normal uppercase tracking-wider">
+                          Payment
+                        </th>
+                        <th className="border-l-2 px-6 py-4 text-right font-normal uppercase tracking-wider">
+                          Balance
+                        </th>
+                      </>
+                    )}
                   </tr>
                 </thead>
+                
                 <tbody className="divide-y divide-gray-200">
                   {data.map((row: any, index: number) => (
                     <tr key={index} className="hover:bg-gray-50">
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                        {new Date(row.date || row.createdAt).toLocaleDateString()}
-                      </td>
-                      <td className="px-6 py-4 text-sm text-gray-900 max-w-md">
-                        <span className={`inline-block px-2 py-1 rounded text-xs ${
-                          row.type === 'invoice' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800'
-                        }`}>
-                          {row.description}
-                        </span>
-                        <div className="text-sm text-gray-600 mt-1">{row.details}</div>
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-medium text-blue-600">
-                        {row.debit ? `$${Number(row.debit).toLocaleString()}` : '-'}
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-medium text-green-600">
-                        {row.credit ? `$${Number(row.credit).toLocaleString()}` : '-'}
-                      </td>
-                      <td className="px-6 py-4 text-right text-sm font-bold text-gray-900">
-                        ${Number(row.balance || 0).toLocaleString()}
-                      </td>
+                      {activeReport === "loads" ? (
+                        <>
+                          <td className="border-l-2 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {new Date(row.date || row.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-sm font-medium text-gray-900">
+                            {row.clientName || row.client?.name || '-'}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-sm text-gray-900 max-w-md">
+                            {row.description || row.invoiceNumber || '-'}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-bold text-gray-700">
+                            {row.quantity?.toLocaleString() || row.debit?.toLocaleString() || '-'}t
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-medium text-gray-900">
+                            ${row.unitPrice ? Number(row.unitPrice).toFixed(2) : '-'}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-bold text-blue-600">
+                            ${Number(row.total || row.balance || 0).toLocaleString()}
+                          </td>
+                        </>
+                      ) : (
+                        // ... other reports unchanged
+                        <>
+                          <td className="border-l-2 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                            {new Date(row.date || row.createdAt).toLocaleDateString()}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-sm">
+                            <span className={`inline-block px-2 py-1 ${
+                              row.type === 'invoice' 
+                            }`}>
+                              {row.description}
+                            </span>
+                            <div className="text-sm text-gray-600 mt-1">{row.details}</div>
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-normal text">
+                            {row.debit ? `$${Number(row.debit).toLocaleString()}` : '-'}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-normal">
+                            {row.credit ? `$${Number(row.credit).toLocaleString()}` : '-'}
+                          </td>
+                          <td className="border-l-2 px-6 py-4 text-right text-sm font-normal">
+                            ${Number(row.balance || 0).toLocaleString()}
+                          </td>
+                        </>
+                      )}
                     </tr>
                   ))}
                 </tbody>
+
+                {/* ✅ NEW: LOADS TOTALS FOOTER */}
+                {activeReport === "loads" && (
+                  <tfoot className="">
+                    <tr>
+                      <th colSpan={3} className="border-l-2 px-6 py-4 text-left text-lg font-normal">
+                        TOTALS
+                      </th>
+                      <th className="border-l-2 px-6 py-4 text-right text-lg font-normal">
+                        {data.reduce((sum: number, row: any) => sum + (row.quantity || row.debit || 0), 0).toLocaleString()}t
+                      </th>
+                      <th className="border-l-2 px-6 py-4 text-right text-lg font-bold text-gray-900">
+                        -
+                      </th>
+                      <th className="border-l-2 px-6 py-4 text-right text-xl font-normal">
+                        ${data.reduce((sum: number, row: any) => sum + Number(row.total || row.balance || 0), 0).toLocaleString()}
+                      </th>
+                    </tr>
+                  </tfoot>
+                )}
               </table>
             </div>
           )}

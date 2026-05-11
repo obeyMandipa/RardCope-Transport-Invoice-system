@@ -9,7 +9,7 @@ export const CashBooks = () => {
     description: "",
     debit: 0,
     credit: 0,
-    reference: "",
+    // reference: "",
   });
   const [entries, setEntries] = useState<CashBookEntry[]>([]);
   const [loading, setLoading] = useState(false);
@@ -36,7 +36,8 @@ export const CashBooks = () => {
     setLoading(true);
     try {
       await api.post("/cashbook", { ...form, type: activeTab });
-      setForm({ date: "", description: "", debit: 0, credit: 0, reference: "" });
+      setForm({ date: "", description: "", debit: 0, credit: 0});
+      // setForm({ date: "", description: "", debit: 0, credit: 0, reference: "" });
       fetchEntries();
     } catch (error) {
       console.error("Failed to create entry:", error);
@@ -144,7 +145,7 @@ export const CashBooks = () => {
               </div> */}
             </div>
 
-            <div className="mt-6">
+            {/* <div className="mt-6">
               <label className="block text-sm font-medium text-gray-700 mb-2">
                 Reference (Optional)
               </label>
@@ -155,7 +156,7 @@ export const CashBooks = () => {
                 onChange={(e) => setForm({ ...form, reference: e.target.value })}
                 className="w-full p-3 border border-gray-300  focus:ring-2 focus:ring-indigo-500"
               />
-            </div>
+            </div> */}
 
             <button
               onClick={submit}
@@ -211,9 +212,9 @@ export const CashBooks = () => {
                     <th className="px-6 py-4 border-l-2 font-normal text-left text-sm uppercase tracking-wider">
                       Description
                     </th>
-                    <th className="px-6 py-4 border-l-2 font-normal text-left text-sm  uppercase tracking-wider">
+                    {/* <th className="px-6 py-4 border-l-2 font-normal text-left text-sm  uppercase tracking-wider">
                       Reference
-                    </th>
+                    </th> */}
                     <th className="px-6 py-4 border-l-2 font-normal text-right text-sm  uppercase tracking-wider">
                       Debit
                     </th>
@@ -237,9 +238,9 @@ export const CashBooks = () => {
                       <td className="border-l-2 px-6 py-4 text-sm text-gray-900 max-w-lg">
                         {entry.description}
                       </td>
-                      <td className="border-l-2 px-6 py-4 text-sm text-gray-600">
+                      {/* <td className="border-l-2 px-6 py-4 text-sm text-gray-600">
                         {entry.reference || "-"}
-                      </td>
+                      </td> */}
                       <td className="border-l-2 px-6 py-4 text-right">
                         ${Number(entry.debit).toLocaleString()}
                       </td>

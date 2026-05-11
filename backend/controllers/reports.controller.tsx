@@ -174,8 +174,9 @@ const getPettyCashBookData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ 4. Loads Report (unchanged)
-const getLoadsReportData = async (query: any): Promise<ReportEntry[]> => {
+
+// ✅ FIXED: Loads Report - Proper client population
+const getLoadsReportData = async (query: any): Promise<any[]> => {
   const { client, startDate, endDate } = query;
 
   const match: any = {};
@@ -187,40 +188,60 @@ const getLoadsReportData = async (query: any): Promise<ReportEntry[]> => {
   }
 
   const loads = await Invoice.aggregate([
+    // ✅ STEP 1: Match invoices
     { $match: match },
+    
+    // ✅ STEP 2: Lookup clients (like invoice.controller populate)
+    {
+      $lookup: {
+        from: "clients",
+        localField: "client",
+        foreignField: "_id",
+        as: "clientDoc"
+      }
+    },
+    { $unwind: { path: "$clientDoc", preserveNullAndEmptyArrays: true } },
+    
+    // ✅ STEP 3: Unwind items
     { $unwind: "$items" },
+    
+    // ✅ STEP 4: Group by invoice + item
     {
       $group: {
         _id: {
           invoice: "$invoiceNumber",
-          client: { $ifNull: ["$client.name", "Unknown"] },
-          date: "$createdAt"
+          clientId: "$client",
+          clientName: { $ifNull: ["$clientDoc.name", "Unknown"] },
+          date: "$createdAt",
+          itemDescription: "$items.description"
         },
-        totalQuantity: { $sum: "$items.quantity" },
-        totalAmount: { $sum: "$items.total" }
+        quantity: { $sum: "$items.quantity" },
+        totalAmount: { $sum: "$items.total" },
+        unitPrice: { $first: "$items.unitPrice" }
       }
     },
+    
+    // ✅ STEP 5: Project final fields
     {
       $project: {
         date: { $dateToString: { format: "%Y-%m-%d", date: "$_id.date" } },
-        description: "$_id.invoice",
-        clientName: "$_id.client",
-        debit: "$totalQuantity",
-        credit: 0,
-        balance: "$totalAmount"
+        clientName: "$_id.clientName",
+        clientId: "$_id.clientId",
+        description: { 
+          $concat: ["$_id.invoice", " - ", "$_id.itemDescription"] 
+        },
+        quantity: "$quantity",
+        unitPrice: { $divide: ["$totalAmount", "$quantity"] },
+        total: "$totalAmount",
+        debit: "$quantity", // PDF compatibility
+        balance: "$totalAmount" // PDF compatibility
       }
     },
-    { $sort: { date: 1 } }
+    
+    { $sort: { date: 1, "_id.invoice": 1 } }
   ]);
 
-  return loads.map((item: any) => createReportEntry({
-    date: item.date,
-    description: item.description,
-    clientName: item.clientName,
-    debit: item.debit,
-    credit: item.credit,
-    balance: item.balance
-  }));
+  return loads;
 };
 
 // ✅ 5. Invoices Report (unchanged)
@@ -284,13 +305,13 @@ export const generatePDFReport = async (req: Request, res: Response) => {
     let reportData: ReportEntry[] = [];
     
     switch (type) {
-      case "statements":
+      case "running statements":
         reportData = await getRunningStatementsData(req.query);
         break;
-      case "primary":
+      case "cashbook":
         reportData = await getPrimaryCashBookData(req.query);
         break;
-      case "petty":
+      case "petty cashbook":
         reportData = await getPettyCashBookData(req.query);
         break;
       case "loads":
@@ -313,7 +334,7 @@ export const generatePDFReport = async (req: Request, res: Response) => {
     doc.pipe(res);
 
     // Header (unchanged)
-    doc.fontSize(20).text(`${type.toUpperCase()} REPORT`, 50, 50);
+    doc.fontSize(15).text(`${type.toUpperCase()} REPORT`, 50, 50);
     doc.fontSize(12).text(`Generated: ${new Date().toLocaleString()}`, 50, 80);
 
     if (client && typeof client === "string") {
@@ -329,7 +350,7 @@ export const generatePDFReport = async (req: Request, res: Response) => {
     doc.fontSize(10).font("Helvetica-Bold")
       .text("Date", 50, y)
       .text("Description", 130, y)
-      .text("Client/Reference", 280, y)
+      // .text("Client/Reference", 280, y)
       .text("Debit $", 450, y)
       .text("Credit $", 520, y)
       .text("Balance $", 580, y);
@@ -343,10 +364,10 @@ export const generatePDFReport = async (req: Request, res: Response) => {
       doc.fontSize(10).font("Helvetica")
         .text(row.date, 50, y, { width: 80 })
         .text(row.description.substring(0, 25), 130, y, { width: 150 })
-        .text((row.clientName || row.reference || "-").substring(0, 20), 280, y, { width: 170 })
-        .text(formatCurrency(row.debit), 450, y, { width: 70, align: "right" })
-        .text(formatCurrency(row.credit), 520, y, { width: 60, align: "right" })
-        .text(formatCurrency(runningBalance), 580, y, { width: 60, align: "right" });
+        // .text((row.clientName || row.reference || "-").substring(0, 20), 280, y, { width: 170 })
+        .text(formatCurrency(row.debit), 450, y, { width: 70, align: "left" })
+        .text(formatCurrency(row.credit), 520, y, { width: 60, align: "left" })
+        .text(formatCurrency(runningBalance), 580, y, { width: 60, align: "left" });
       
       y += 20;
       if (y > 700) {

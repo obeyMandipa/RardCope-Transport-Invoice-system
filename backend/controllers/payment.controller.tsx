@@ -79,7 +79,11 @@ export const createPayment = async (req: Request, res: Response) => {
     // Populate all created payments
     const populatedPayments = await Payment.find({
       _id: { $in: createdPayments.map(p => p._id) }
-    }).populate("invoice", "invoiceNumber client totalAmount balance paid");
+    }).populate({
+  path: "invoice",
+  populate: { path: "client", select: "name" },
+  select: "invoiceNumber totalAmount balance paid"
+});
 
     res.status(201).json({
       message: `Payment created successfully. Allocated across ${createdPayments.length} invoice(s).`,
@@ -115,7 +119,14 @@ const createCashBookEntry = async (amount: number, date: string | Date, client: 
 // Rest of your existing functions (getPayments, deletePayment, etc.) remain the same...
 export const getPayments = async (req: Request, res: Response) => {
   const payments = await Payment.find()
-    .populate("invoice", "invoiceNumber client totalAmount balance paid")
+    .populate({
+      path: "invoice",
+      populate: {
+        path: "client",
+        select: "name"
+      },
+      select: "invoiceNumber totalAmount balance paid"
+    })
     .sort({ date: -1 });
   res.json(payments);
 };

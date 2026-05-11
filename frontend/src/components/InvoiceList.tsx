@@ -6,6 +6,7 @@ import api from "../utils/api";
 import type { Invoice } from "../types";
 import { IoIosClose } from "react-icons/io";
 import { IoDownloadOutline } from "react-icons/io5";
+import header from "../assets/header.png";
 
 
 
@@ -56,6 +57,16 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
 
   if (loading) return <div className="text-center py-8">Loading invoices...</div>;
 
+  const handleDelete = async (id: string) => {
+  try {
+    await api.delete(`/invoices/${id}`);
+    fetchInvoices();
+    onRefresh();
+  } catch (error) {
+    alert("Failed to delete invoice");
+  }
+};
+
   return (
     <div className="">
       {/* Invoice Table */}
@@ -98,11 +109,15 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                     View
                   </button>
                   <button
-                    onClick={() => handleDownload(invoice._id)}
-                    className="text-green-300 px-3 py-1 rounded font-medium hover:text-green-600"
-                  >
-                    Download
-                  </button>
+    onClick={() => {
+      if (confirm(`Delete ${invoice.invoiceNumber}?`)) {
+        handleDelete(invoice._id);
+      }
+    }}
+    className="text-red-400 px-3 py-1 rounded font-medium hover:text-red-600"
+  >
+    Delete
+  </button>
                 </td>
               </tr>
             ))}
@@ -150,7 +165,7 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                         <th className="px-6 py-4 text-left uppercase font-normal border-r-2">Description</th>
                         <th className="px-6 py-4 text-right uppercase font-normal border-r-2">Qty</th>
                         <th className="px-6 py-4 text-right uppercase font-normal border-r-2">Unit Price</th>
-                        <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Total</th>
+                        {/* <th className="px-6 py-4 text-right text-sm font-semibold text-gray-900">Total</th> */}
                       </tr>
                     </thead>
                     <tbody className="divide-y divide-gray-200">
@@ -166,9 +181,9 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                           <td className="px-6 py-4 text-right border-r-2">
                             ${item.unitPrice.toFixed(2)}
                           </td>
-                          <td className="px-6 py-4 text-right  ">
+                          {/* <td className="px-6 py-4 text-right  ">
                             ${item.total.toFixed(2)}
-                          </td>
+                          </td> */}
                         </tr>
                       ))}
                     </tbody>
@@ -179,21 +194,24 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
               {/* Footer */}
               <div className="  mb-8 text-lg">
                 <div className="space-y-2 flex flex-col justify-end items-end">
-                  <div>Paid: <span className="font-semibold">${viewInvoice.paid.toFixed(2)}</span></div>
-                  <div className="text-[20px] border-t pt-2">
+                 {viewInvoice.items.map((item, i) =>((
+                    <div>TOTAL: <span className="font-semibold">${item.total.toFixed(2)}</span></div>
+                 )))}
+                  
+                  {/* <div className="text-[20px] border-t pt-2">
                     Balance: ${viewInvoice.balance.toFixed(2)}
-                  </div>
+                  </div> */}
                 </div>
               </div>
 
               <div className=" ml-8 flex justify-start border-t pt-6">
                 <div>
-                    BANKING DETAILS <br />
-                    BANK: ZB <br />
-                    ACC NAME: 4125469593405 <br />
-                    BRANCH: WESTGATE <br />
-                    ACCOUNT: 4125469593405 <br />
-                    PHONE: 0779 711 229 <br />
+                  <p className="font-semibold text-lg">BANKING DETAILS</p>
+                  <p>BANK: ZB</p>
+                  <p>ACC NAME: 4125469593405</p>
+                  <p>BRANCH: WESTGATE</p> 
+                  <p>ACCOUNT: 4125469593405</p>
+                  <p>PHONE: 0779 711 229</p> 
                 </div>
                 </div>
 

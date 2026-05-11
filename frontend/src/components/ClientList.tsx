@@ -72,10 +72,10 @@ export const ClientList = () => {
               </tr>
             ) : clients.map((client) => (
               <tr key={client._id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 font-medium">{client.name}</td>
-                <td className="px-6 py-4">{client.email}</td>
-                <td className="px-6 py-4">{client.phone}</td>
-                <td className="px-6 py-4">
+                <td className="px-6 py-4 font-medium border-l-2">{client.name}</td>
+                <td className="px-6 py-4 border-l-2">{client.email}</td>
+                <td className="px-6 py-4 border-l-2">{client.phone}</td>
+                <td className="px-6 py-4 border-l-2">
                   <button
                     onClick={() => setSelectedClient(client)}
                     className="text-blue-600 hover:text-blue-900 mr-3"

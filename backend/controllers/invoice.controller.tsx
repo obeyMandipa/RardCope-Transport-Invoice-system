@@ -83,3 +83,24 @@ export const downloadInvoice = async (req: Request, res: Response) => {
     res.status(500).json({ error: "Failed to download invoice" });
   }
 };
+
+export const deleteInvoice = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    
+    const invoice = await Invoice.findById(id);
+    if (!invoice) {
+      return res.status(404).json({ error: "Invoice not found" });
+    }
+
+    await Invoice.findByIdAndDelete(id);
+    
+    res.json({ 
+      message: `Invoice ${invoice.invoiceNumber} deleted successfully`,
+      deletedId: id 
+    });
+  } catch (error) {
+    console.error("Delete invoice error:", error);
+    res.status(500).json({ error: "Failed to delete invoice" });
+  }
+};

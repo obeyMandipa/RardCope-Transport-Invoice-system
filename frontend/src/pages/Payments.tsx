@@ -83,7 +83,7 @@ export const Payments = () => {
   const totalOutstanding = filteredInvoices.reduce((sum, inv) => sum + inv.balance, 0);
 
   return (
-    <div className="p-8">
+    <div className="">
       <h1 className="text-[40px] mb-6">Invoice Payments</h1>
 
       <div className="overflow-y-scroll h-[80vh]">
@@ -187,7 +187,7 @@ export const Payments = () => {
           <button
             onClick={submit}
             disabled={!form.clientId || !form.amount || loading}
-            className="bg-green-500 text-white px-6 py-2 hover:bg-green-600 disabled:bg-gray-400 w-full"
+            className="bg-green-500 text-white px-6 py-2 hover:bg-green-600 disabled:bg-gray-400 "
           >
             {loading ? "Processing..." : "Save Payment"}
           </button>
