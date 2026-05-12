@@ -123,27 +123,14 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                 <td className="px-6 py-4 text-sm text-gray-500 border-l-2">
                   {new Date(invoice.createdAt).toLocaleDateString()}
                 </td>
-                <td className="px-6 py-4 whitespace-nowrap space-x-2 border-l-2">
+                <td className="flex px-6 py-4 whitespace-nowrap space-x-2 border-l-2">
                   <button
                     onClick={() => handleViewInvoice(invoice._id)}
                     className="text-blue-300 px-3 py-1 rounded font-medium hover:text-blue-600 "
                   >
                     View
                   </button>
-                  <button
-                    onClick={() => handleDownload(invoice._id)}
-                    className="text-gray-400 px-3 py-1 rounded font-medium hover:text-gray-900 flex items-center gap-1"
-                    title="Download PDF"
-                  >
-                    <IoDownloadOutline className="text-lg" /> PDF
-                  </button>
-                  <button
-                    onClick={() => handleExcel(invoice._id)}
-                    className="text-green-600 px-3 py-1 rounded font-medium hover:text-white hover:bg-green-600 flex items-center gap-1"
-                    title="Export to Excel"
-                  >
-                    <FaFileExcel className="text-lg" /> Excel
-                  </button>
+
                   <button
                     onClick={() => {
                       if (confirm(`Delete ${invoice.invoiceNumber}?`)) {

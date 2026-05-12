@@ -264,13 +264,13 @@ export const getInvoicesReport = async (req: Request, res: Response) => {
 export const generatePDFReport = async (req: Request, res: Response) => {
   const { type } = req.params as { type: string };
   const decodedType = decodeURIComponent(type);
-
   const { client, startDate, endDate } = req.query as { client?: string; startDate?: string; endDate?: string };
 
   try {
     let reportData: ReportEntry[] = [];
     
-switch (decodedType) {
+    // ✅ Switch for all report types
+    switch (decodedType) {
       case "runningstatements":
         reportData = await getRunningStatementsData(req.query);
         break;
@@ -290,42 +290,136 @@ switch (decodedType) {
         return res.status(400).json({ error: `Invalid report type: ${decodedType}` });
     }
 
-    const doc = new PDFDocument({ margin: 50 });
+    const doc = new PDFDocument({ margin: 50, size: 'A4' });
     res.setHeader("Content-Type", "application/pdf");
-    res.setHeader("Content-Disposition", `attachment; filename="${decodedType}_report.pdf"`);
-
+    res.setHeader("Content-Disposition", `attachment; filename="${decodedType}_report_${new Date().toISOString().split('T')[0]}.pdf"`);
     doc.pipe(res);
 
-    // Header
-doc.fontSize(20).text(`${decodedType.toUpperCase()} REPORT`, 50, 50);
-    
-    // Table
-    const colWidths = [60, 200, 60, 60, 70]; // ✅ Fixed undefined
+    // --- BRANDED HEADER ---
+const headerHeight = 150;
+const pageWidth = doc.page.width;
+const margin = 50;
+const companyNameX = 150;      // Company name start position
+const contactStartX = 400;     // Contact info start (left-aligned, after company)
+const contactWidth = 250;      // Fixed width to prevent overflow
+
+// 1. Red Triangle (Top Right)
+doc.save()
+   .moveTo(pageWidth - 300, 0)
+   .lineTo(pageWidth, 0)
+   .lineTo(pageWidth, 70)
+   .fill('#ef4444');
+
+// 2. Logo
+const logoPath = path.join(__dirname, "..", "..", "frontend", "src", "assets", "logo.png"); 
+if (fs.existsSync(logoPath)) {
+  doc.image(logoPath, 50, 30, { height: 90 });
+}
+
+// 3. Company Name
+doc.fillColor('#ef4444')
+   .fontSize(22)
+   .font("Helvetica-Bold")
+   .text("Rardcope Transport", companyNameX, 65, { width: 250 });
+
+// 4. Contact Info (Left-aligned, fixed position after company name)
+doc.fillColor('#000000')
+   .fontSize(10)  // Smaller font fits better
+   .font("Helvetica")
+   .text("+263 42 759 290 / +263 779 711 229", contactStartX, 45, { width: contactWidth })
+   .text("+263 736 919 099", contactStartX, 58, { width: contactWidth })
+   .text("304 Empowerment Way, Willowvale", contactStartX, 71, { width: contactWidth })
+   .text("Harare", contactStartX, 84, { width: contactWidth })
+   .text("rardcopetransport@gmail.com", contactStartX, 97, { width: contactWidth })
+   .fillColor('#2563eb')
+   .fontSize(9)
+   .text("www.rardcopetransport.co.zw", contactStartX, 110, { width: contactWidth });
+
+doc.restore();
+// --- END HEADER ---
+
+    // Report Title & Filters
+    let y = 200;
+    doc.fillColor('#000000').fontSize(18).font("Helvetica-Bold")
+       .text(`${decodedType.replace('_', ' ').toUpperCase()} REPORT`, 50, y);
+    y += 25;
+
+    // Add filters info
+    if (client || startDate || endDate) {
+      let filterText = "Filters: ";
+      if (client) filterText += `Client=${client} `;
+      if (startDate) filterText += `From=${new Date(startDate as string).toLocaleDateString('en-GB')} `;
+      if (endDate) filterText += `To=${new Date(endDate as string).toLocaleDateString('en-GB')}`;
+      doc.fontSize(10).font("Helvetica").text(filterText.trim(), 50, y);
+      y += 20;
+    }
+
+    // Table Headers
+    const colWidths = [60, 200, 60, 60, 70];
     const headers = ["Date", "Description", "Debit", "Credit", "Balance"];
     
-    let y = 120;
     doc.fontSize(10).font("Helvetica-Bold");
     let x = 50;
     headers.forEach((header, i) => {
-      doc.text(header, x, y);
+      doc.text(header, x, y, { width: colWidths[i], align: i > 1 ? 'right' : 'left' });
       x += (colWidths[i] as number);
     });
-    y += 25;
+    y += 20;
+
+    // Header underline
+    doc.moveTo(50, y - 5).lineTo(pageWidth - 50, y - 5).stroke('#eeeeee');
 
     // Data rows
     let runningBalance = 0;
-    doc.font("Helvetica");
+    doc.fontSize(9).font("Helvetica");
+    
     reportData.forEach(row => {
+      // Auto page break
+      if (y > 700) {
+        doc.addPage();
+        y = 50;
+        // Re-add header on new page
+        doc.fontSize(10).font("Helvetica-Bold");
+        x = 50;
+        headers.forEach((header, i) => {
+          doc.text(header, x, y, { width: colWidths[i], align: i > 1 ? 'right' : 'left' });
+          x += (colWidths[i] as number);
+        });
+        y += 25;
+        doc.moveTo(50, y - 5).lineTo(pageWidth - 50, y - 5).stroke('#eeeeee');
+        doc.fontSize(9).font("Helvetica");
+      }
+
       runningBalance += row.debit - row.credit;
       x = 50;
       const dateStr = row.date ? new Date(row.date).toLocaleDateString('en-GB') : '';
-      [dateStr, row.description, formatCurrency(row.debit), formatCurrency(row.credit), formatCurrency(runningBalance)]
-        .forEach((val, i) => {
-          doc.text(val.toString(), x, y);
-          x += (colWidths[i] as number);
+      
+      const values = [
+        dateStr,
+        row.description.substring(0, 35),  // Truncate long descriptions
+        formatCurrency(row.debit),
+        formatCurrency(row.credit),
+        formatCurrency(runningBalance)
+      ];
+
+      values.forEach((val, i) => {
+        doc.text(val.toString(), x, y, { 
+          width: colWidths[i], 
+          align: i > 1 ? 'right' : 'left',
+          lineBreak: true 
         });
-      y += 20;
+        x += (colWidths[i] as number);
+      });
+      y += 18;
     });
+
+    // Totals Footer
+    y += 10;
+    doc.fontSize(12).font("Helvetica");
+    doc.text("TOTAL DEBIT:", 50, y, { align: 'left' });
+    doc.text(formatCurrency(reportData.reduce((sum, r) => sum + r.debit, 0)), pageWidth - 200, y, { align: 'right' });
+    doc.text("FINAL BALANCE: ", 50, y + 20, { align: 'left' });
+    doc.text(formatCurrency(runningBalance), pageWidth - 200, y + 20, { align: 'right' });
 
     doc.end();
   } catch (error) {

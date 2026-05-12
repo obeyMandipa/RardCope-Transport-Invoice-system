@@ -20,7 +20,7 @@ const navItems = [
   { path: "/payments", icon: <CiMoneyCheck1 className="text-xl" /> , label: "Payments" },
   { path: "/expenses", icon: <GiTakeMyMoney className="text-xl"/> , label: "Expenses" },
   {path: "/cashbooks", icon: <IoMdBook  className="text-xl"/> , label: "Cash Books" },
-  { path: "/statements", icon: <HiOutlineTableCells className="text-xl"/>, label: "Statements" },
+  // { path: "/statements", icon: <HiOutlineTableCells className="text-xl"/>, label: "Statements" },
   { path: "/clients", icon: <FiUsers className="text-xl"/>, label: "Clients" },
   { path: "/reports", icon: <TbReportSearch className="text-xl" />, label: "Reports" },
 ];
