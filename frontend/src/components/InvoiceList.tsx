@@ -44,50 +44,46 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
   const handleDownload = async (id: string) => {
     try {
       const response = await api.get(`/invoices/${id}/pdf`, { responseType: "blob" });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const url = window.URL.createObjectURL(new Blob([response.data]));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `INVOICE_${id}_${new Date().toISOString().split('T')[0]}.pdf`;
-      document.body.appendChild(a);
+      a.download = `${viewInvoice?.invoiceNumber || id}_INVOICE.pdf`;
       a.click();
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }, 100);
+      window.URL.revokeObjectURL(url);
     } catch (error) {
       alert("Download failed");
     }
   };
 
-  const handleExcel = async (id: string) => {
-    try {
-      const response = await api.get(`/invoices/${id}/excel?noHeader=1`, { responseType: "blob" });
-      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
-      const a = document.createElement("a");
-      a.href = url;
-      a.download = `INVOICE_${id}_${new Date().toISOString().split('T')[0]}.xlsx`;
-      document.body.appendChild(a);
-      a.click();
-      setTimeout(() => {
-        window.URL.revokeObjectURL(url);
-        document.body.removeChild(a);
-      }, 100);
-    } catch (error) {
-      alert("Excel export failed");
-    }
-  };
+  // const handleExcel = async (id: string) => {
+  //   try {
+  //     const response = await api.get(`/invoices/${id}/excel?noHeader=1`, { responseType: "blob" });
+  //     const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+  //     const a = document.createElement("a");
+  //     a.href = url;
+  //     a.download = `INVOICE_${id}_${new Date().toISOString().split('T')[0]}.xlsx`;
+  //     document.body.appendChild(a);
+  //     a.click();
+  //     setTimeout(() => {
+  //       window.URL.revokeObjectURL(url);
+  //       document.body.removeChild(a);
+  //     }, 100);
+  //   } catch (error) {
+  //     alert("Excel export failed");
+  //   }
+  // };
 
   if (loading) return <div className="text-center py-8">Loading invoices...</div>;
 
   const handleDelete = async (id: string) => {
-  try {
-    await api.delete(`/invoices/${id}`);
-    fetchInvoices();
-    onRefresh();
-  } catch (error) {
-    alert("Failed to delete invoice");
-  }
-};
+    try {
+      await api.delete(`/invoices/${id}`);
+      fetchInvoices();
+      onRefresh();
+    } catch (error) {
+      alert("Failed to delete invoice");
+    }
+  };
 
   return (
     <div className="">

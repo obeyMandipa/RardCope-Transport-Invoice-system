@@ -256,23 +256,23 @@ export const Reports = () => {
                     <tr key={index} className="hover:bg-gray-50">
                       {activeReport === "loads" ? (
                         <>
-                          <td className="border-l-2 px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+                          <td className="border-l-2 px-6 py-4 whitespace-nowrap">
                             {new Date(row.date || row.createdAt).toLocaleDateString()}
                           </td>
-                          <td className="border-l-2 px-6 py-4 text-sm font-medium text-gray-900">
+                          <td className="border-l-2 px-6 py-4 text-sm ">
                             {row.clientName || row.client?.name || '-'}
                           </td>
-                          <td className="border-l-2 px-6 py-4 text-sm text-gray-900 max-w-md">
+                          <td className="border-l-2 px-6 py-4  max-w-md">
                             {row.description || '-'}
                             {/* {row.description || row.invoiceNumber || '-'} */}
                           </td>
-                          <td className="border-l-2 px-6 py-4 text-right text-sm font-bold text-gray-700">
+                          <td className="border-l-2 px-6 py-4 text-right">
                             {row.quantity?.toLocaleString() || row.debit?.toLocaleString() || '-'}t
                           </td>
-                          <td className="border-l-2 px-6 py-4 text-right text-sm font-medium text-gray-900">
+                          <td className="border-l-2 px-6 py-4 text-right">
                             ${row.unitPrice ? Number(row.unitPrice).toFixed(2) : '-'}
                           </td>
-                          <td className="border-l-2 px-6 py-4 text-right text-sm font-bold text-blue-600">
+                          <td className="border-l-2 px-6 py-4 text-right">
                             ${Number(row.total || row.balance || 0).toLocaleString()}
                           </td>
                         </>

@@ -295,7 +295,7 @@ export const generatePDFReport = async (req: Request, res: Response) => {
     res.setHeader("Content-Disposition", `attachment; filename="${decodedType}_report_${new Date().toISOString().split('T')[0]}.pdf"`);
     doc.pipe(res);
 
-    // --- BRANDED HEADER ---
+// --- BRANDED HEADER ---
 const headerHeight = 150;
 const pageWidth = doc.page.width;
 const margin = 50;
