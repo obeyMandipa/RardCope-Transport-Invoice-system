@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import type { Client } from "../types";
 import { StatementTable } from "../components/StatementTable";
-import header from "../assets/header.png";
+import logo from "../assets/logo.png";
 
 export const Statements = () => {
   const [clients, setClients] = useState<Client[]>([]);
@@ -38,13 +38,31 @@ export const Statements = () => {
   return (
     <div className="w-full pr-8 ">
 
-      <div className="header border-2 bg-red-400 w-full mb-8">
-
-        <header className="bg-gray-900 text-white shadow-md">
-          <img src={header} alt="Header" className="fill justify-center" />
-        </header>
+      <div className="flex justify-between items-center border-2 w-full h-[200px] mb-8 p-4"
+        style={{
+          // Creating a triangle using a linear gradient with hard stops
+          backgroundImage: `linear-gradient(to bottom left, #ef4444 50%, transparent 50.5%)`,
+          backgroundRepeat: 'no-repeat',
+          backgroundPosition: 'top right',
+          backgroundSize: '500px 70px' // Your specific dimensions
+        }}
+      >
+        <img src={logo} alt="Logo" className="object-contain h-[170px] w-[170px]" />
         
+        <div className="text-[70px] font-bold text-red-500 ">
+          Rardcope Transport 
+        </div>
+
+        <div className="text-[16px] text-left  mr-[200px] mt-[40px]">
+          <div>+263 42 759 290/ +263 779 711 229</div>
+          <div>+263 736 919 099</div>
+          <div>304 Empowerment Way, Willowvale</div>
+          <div>Harare</div>
+          <div>rardcopetransport@gmail.com</div>
+          <div>https://www.rardcopetransport.co.zw</div>
+        </div>
       </div>
+      
       <h1 className="text-[40px] mb">Statements</h1>
       
       <div className="h-[84vh] overflow-y-scroll">

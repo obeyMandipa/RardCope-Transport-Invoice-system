@@ -8,6 +8,9 @@ import { Payment } from "../models/Payment";
 import { CashBookEntry } from "../models/CashBookEntry";
 import { Client } from "../models/Client";
 import PDFDocument from "pdfkit";
+import fs from "fs";
+import path from "path";
+import ExcelJS from "exceljs";
 
 interface ReportEntry {
   date: string;
@@ -31,61 +34,52 @@ const createReportEntry = (data: any): ReportEntry => ({
   balance: Number(data.balance) || 0
 });
 
-// ✅ FIXED: Running Statements - Pure Mongoose (no aggregation)
+// ✅ 1. runningstatements
 const getRunningStatementsData = async (query: any): Promise<ReportEntry[]> => {
-  const { client, startDate, endDate } = query;
+  const { client, startDate, endDate } = query as { client?: string; startDate?: string; endDate?: string };
   
-  // Client filter
   const clientMatch: any = client ? { client: client } : { client: { $exists: true } };
-  
-  // Date filter
   const dateFilter: any = {};
+  
   if (startDate || endDate) {
     dateFilter.createdAt = {};
-    if (startDate) dateFilter.createdAt.$gte = new Date(startDate as string);
+    if (startDate) dateFilter.createdAt.$gte = new Date(startDate);
     if (endDate) dateFilter.createdAt.$lte = new Date((endDate as string) + "T23:59:59Z");
   }
 
-  // ✅ Use Mongoose find() instead of aggregation to avoid projection issues
   const invoices = await Invoice.find({ ...clientMatch, ...dateFilter })
     .populate("client", "name")
     .sort({ createdAt: 1 });
 
   const invoiceIds = invoices.map((inv: any) => inv._id);
-  
-  // Filter payments by date if specified
   const paymentFilter: any = { invoice: { $in: invoiceIds } };
+  
   if (startDate || endDate) {
     paymentFilter.date = {};
-    if (startDate) paymentFilter.date.$gte = new Date(startDate as string);
+    if (startDate) paymentFilter.date.$gte = new Date(startDate);
     if (endDate) paymentFilter.date.$lte = new Date((endDate as string) + "T23:59:59Z");
   }
 
   const payments = await Payment.find(paymentFilter).sort({ date: 1 });
 
-  // Build chronological rows
   const rows: any[] = [];
-  
   for (const inv of invoices) {
     rows.push({
       date: inv.createdAt,
       transaction: inv.invoiceNumber,
-      details: inv.items.map((item: any) => item.description).join(", ") || "Invoice",
+      details: inv.items.map((item: any) => item.description).join(", "),
       amount: inv.totalAmount,
       payment: null,
       type: "invoice",
       clientName: (inv.client as any)?.name
     });
 
-    const invPayments = payments.filter((p: any) => 
-      p.invoice.toString() === inv._id.toString()
-    );
-
+    const invPayments = payments.filter((p: any) => p.invoice.toString() === inv._id.toString());
     for (const pay of invPayments) {
       rows.push({
         date: pay.date,
         transaction: "Payment",
-        details: pay.description || "Payment received",
+        details: pay.description || "Payment received from",
         amount: null,
         payment: pay.amount,
         type: "payment",
@@ -94,17 +88,12 @@ const getRunningStatementsData = async (query: any): Promise<ReportEntry[]> => {
     }
   }
 
-  // Sort chronologically
   rows.sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
-  // Calculate running balance
   let runningBalance = 0;
   const statement = rows.map((row: any) => {
-    if (row.type === "invoice") {
-      runningBalance += Number(row.amount || 0);
-    } else if (row.type === "payment") {
-      runningBalance -= Number(row.payment || 0);
-    }
+    if (row.type === "invoice") runningBalance += Number(row.amount || 0);
+    else if (row.type === "payment") runningBalance -= Number(row.payment || 0);
 
     return {
       date: new Date(row.date).toISOString().split("T")[0],
@@ -128,70 +117,41 @@ const getRunningStatementsData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ 2. Primary Cash Book (unchanged)
+// ✅ Other data functions (unchanged but type-safe)
 const getPrimaryCashBookData = async (query: any): Promise<ReportEntry[]> => {
-  const { client } = query;
-  
+  const { client } = query as { client?: string };
   const match: any = { type: "primary" };
-  if (client) {
-    match.reference = { $regex: client as string, $options: "i" };
-  }
+  if (client) match.reference = { $regex: client, $options: "i" };
 
-  const entries = await CashBookEntry.find(match)
-    .sort({ date: 1, createdAt: 1 })
-    .lean();
-
-  return entries.map((entry: any) => createReportEntry({
-    date: entry.date,
-    description: entry.description,
-    reference: entry.reference,
-    debit: entry.debit,
-    credit: entry.credit,
-    balance: entry.balance
-  }));
+  const entries = await CashBookEntry.find(match).sort({ date: 1, createdAt: 1 }).lean();
+  return entries.map((entry: any) => createReportEntry(entry));
 };
 
-// ✅ 3. Petty Cash Book (unchanged)
 const getPettyCashBookData = async (query: any): Promise<ReportEntry[]> => {
-  const { client } = query;
-  
+  const { client } = query as { client?: string };
   const match: any = { type: "petty" };
-  if (client) {
-    match.reference = { $regex: client as string, $options: "i" };
-  }
+  if (client) match.reference = { $regex: client, $options: "i" };
 
-  const entries = await CashBookEntry.find(match)
-    .sort({ date: 1, createdAt: 1 })
-    .lean();
-
-  return entries.map((entry: any) => createReportEntry({
-    date: entry.date,
-    description: entry.description,
-    reference: entry.reference,
-    debit: entry.debit,
-    credit: entry.credit,
-    balance: entry.balance
-  }));
+  const entries = await CashBookEntry.find(match).sort({ date: 1, createdAt: 1 }).lean();
+  return entries.map((entry: any) => createReportEntry(entry));
 };
 
-
-// ✅ FIXED: Loads Report - Proper client population
 const getLoadsReportData = async (query: any): Promise<any[]> => {
-  const { client, startDate, endDate } = query;
+  const { client, startDate, endDate } = query as { client?: string; startDate?: string; endDate?: string };
 
   const match: any = {};
   if (client) match.client = client;
   if (startDate || endDate) {
     match.createdAt = {};
-    if (startDate) match.createdAt.$gte = new Date(startDate as string);
+    if (startDate) match.createdAt.$gte = new Date(startDate);
     if (endDate) match.createdAt.$lte = new Date((endDate as string) + "T23:59:59Z");
   }
 
   const loads = await Invoice.aggregate([
-    // ✅ STEP 1: Match invoices
+    // STEP 1: Match invoices
     { $match: match },
     
-    // ✅ STEP 2: Lookup clients (like invoice.controller populate)
+    // STEP 2: Lookup clients
     {
       $lookup: {
         from: "clients",
@@ -202,10 +162,10 @@ const getLoadsReportData = async (query: any): Promise<any[]> => {
     },
     { $unwind: { path: "$clientDoc", preserveNullAndEmptyArrays: true } },
     
-    // ✅ STEP 3: Unwind items
+    // STEP 3: Unwind items
     { $unwind: "$items" },
     
-    // ✅ STEP 4: Group by invoice + item
+    // STEP 4: Group by invoice + item
     {
       $group: {
         _id: {
@@ -221,32 +181,33 @@ const getLoadsReportData = async (query: any): Promise<any[]> => {
       }
     },
     
-    // ✅ STEP 5: Project final fields
+    // STEP 5: Project final fields
     {
       $project: {
         date: { $dateToString: { format: "%Y-%m-%d", date: "$_id.date" } },
         clientName: "$_id.clientName",
         clientId: "$_id.clientId",
         description: { 
-          $concat: ["$_id.invoice", " - ", "$_id.itemDescription"] 
+          // $concat: ["$_id.invoice", " - ", "$_id.itemDescription"] 
+          $concat: ["$_id.itemDescription"] 
         },
         quantity: "$quantity",
         unitPrice: { $divide: ["$totalAmount", "$quantity"] },
         total: "$totalAmount",
-        debit: "$quantity", // PDF compatibility
-        balance: "$totalAmount" // PDF compatibility
+        debit: "$quantity",
+        balance: "$totalAmount"
       }
     },
     
     { $sort: { date: 1, "_id.invoice": 1 } }
   ]);
 
-  return loads;
+  return loads; // ✅ FIXED: Return the result!
 };
 
-// ✅ 5. Invoices Report (unchanged)
 const getInvoicesReportData = async (query: any): Promise<ReportEntry[]> => {
   const { client, startDate, endDate } = query;
+
 
   const match: any = {};
   if (client) match.client = client;
@@ -256,10 +217,12 @@ const getInvoicesReportData = async (query: any): Promise<ReportEntry[]> => {
     if (endDate) match.createdAt.$lte = new Date((endDate as string) + "T23:59:59Z");
   }
 
+
   const invoices = await Invoice.find(match)
     .populate("client", "name")
     .sort({ createdAt: 1 })
     .lean();
+
 
   return invoices.map((inv: any) => createReportEntry({
     date: inv.createdAt,
@@ -271,7 +234,7 @@ const getInvoicesReportData = async (query: any): Promise<ReportEntry[]> => {
   }));
 };
 
-// ✅ Controllers & PDF (unchanged)
+// Controllers
 export const getRunningStatements = async (req: Request, res: Response) => {
   const data = await getRunningStatementsData(req.query);
   res.json(data);
@@ -297,21 +260,98 @@ export const getInvoicesReport = async (req: Request, res: Response) => {
   res.json(data);
 };
 
+// ✅ FIXED: PDF Generation
 export const generatePDFReport = async (req: Request, res: Response) => {
   const { type } = req.params as { type: string };
-  const { client, startDate, endDate } = req.query;
+  const decodedType = decodeURIComponent(type);
+
+  const { client, startDate, endDate } = req.query as { client?: string; startDate?: string; endDate?: string };
 
   try {
     let reportData: ReportEntry[] = [];
     
-    switch (type) {
-      case "running statements":
+switch (decodedType) {
+      case "runningstatements":
         reportData = await getRunningStatementsData(req.query);
         break;
       case "cashbook":
         reportData = await getPrimaryCashBookData(req.query);
         break;
-      case "petty cashbook":
+      case "pettycashbook":
+        reportData = await getPettyCashBookData(req.query);
+        break;
+      case "loads":
+        reportData = await getLoadsReportData(req.query) as any[];
+        break;
+      case "invoices":
+        reportData = await getInvoicesReportData(req.query);
+        break;
+      default:
+        return res.status(400).json({ error: `Invalid report type: ${decodedType}` });
+    }
+
+    const doc = new PDFDocument({ margin: 50 });
+    res.setHeader("Content-Type", "application/pdf");
+    res.setHeader("Content-Disposition", `attachment; filename="${decodedType}_report.pdf"`);
+
+    doc.pipe(res);
+
+    // Header
+doc.fontSize(20).text(`${decodedType.toUpperCase()} REPORT`, 50, 50);
+    
+    // Table
+    const colWidths = [60, 200, 60, 60, 70]; // ✅ Fixed undefined
+    const headers = ["Date", "Description", "Debit", "Credit", "Balance"];
+    
+    let y = 120;
+    doc.fontSize(10).font("Helvetica-Bold");
+    let x = 50;
+    headers.forEach((header, i) => {
+      doc.text(header, x, y);
+      x += (colWidths[i] as number);
+    });
+    y += 25;
+
+    // Data rows
+    let runningBalance = 0;
+    doc.font("Helvetica");
+    reportData.forEach(row => {
+      runningBalance += row.debit - row.credit;
+      x = 50;
+      const dateStr = row.date ? new Date(row.date).toLocaleDateString('en-GB') : '';
+      [dateStr, row.description, formatCurrency(row.debit), formatCurrency(row.credit), formatCurrency(runningBalance)]
+        .forEach((val, i) => {
+          doc.text(val.toString(), x, y);
+          x += (colWidths[i] as number);
+        });
+      y += 20;
+    });
+
+    doc.end();
+  } catch (error) {
+    console.error("PDF Error:", error);
+    res.status(500).json({ error: "Failed to generate PDF" });
+  }
+};
+
+// ✅ FIXED: Excel Export (properly exported)
+export const exportExcelReport = async (req: Request, res: Response) => {
+  const { type } = req.params as { type: string };
+  const decodedType = decodeURIComponent(type);
+  const { noHeader } = req.query as { noHeader?: string };
+
+  try {
+    let reportData: any[] = [];
+    
+    // 1. Fetch the correct data based on the type
+    switch (decodedType) {
+      case "runningstatements":
+        reportData = await getRunningStatementsData(req.query);
+        break;
+      case "cashbook":
+        reportData = await getPrimaryCashBookData(req.query);
+        break;
+      case "pettycashbook":
         reportData = await getPettyCashBookData(req.query);
         break;
       case "loads":
@@ -321,71 +361,55 @@ export const generatePDFReport = async (req: Request, res: Response) => {
         reportData = await getInvoicesReportData(req.query);
         break;
       default:
-        return res.status(400).json({ error: "Invalid report type" });
+        return res.status(400).json({ error: `Invalid report type: ${decodedType}` });
     }
 
-    const doc = new PDFDocument({ margin: 50 });
-    res.setHeader("Content-Type", "application/pdf");
-    res.setHeader(
-      "Content-Disposition", 
-      `attachment; filename="${type}_report_${new Date().toISOString().split('T')[0]}.pdf"`
-    );
-
-    doc.pipe(res);
-
-    // Header (unchanged)
-    doc.fontSize(15).text(`${type.toUpperCase()} REPORT`, 50, 50);
-    doc.fontSize(12).text(`Generated: ${new Date().toLocaleString()}`, 50, 80);
-
-    if (client && typeof client === "string") {
-      const clientDoc = await Client.findById(client);
-      doc.text(`Client: ${clientDoc?.name || client}`, 50, 100);
-    }
-    if (startDate || endDate) {
-      doc.text(`Period: ${startDate || "..."} to ${endDate || "..."}`, 50, 115);
+    // 2. Initialize Workbook
+    const workbook = new ExcelJS.Workbook();
+    const sheet = workbook.addWorksheet("Report");
+    
+    // 3. Add Headers (Unless noHeader is explicitly requested)
+    // Note: I reversed your logic because usually 'noHeader' means "don't show".
+    // If you want them always, remove the if check.
+    if (noHeader) {
+      sheet.addRow(["Date", "Description", "Debit $", "Credit $", "Balance $"]);
+      sheet.getRow(1).font = { bold: true };
     }
 
-    // Table Headers
-    let y = 150;
-    doc.fontSize(10).font("Helvetica-Bold")
-      .text("Date", 50, y)
-      .text("Description", 130, y)
-      // .text("Client/Reference", 280, y)
-      .text("Debit $", 450, y)
-      .text("Credit $", 520, y)
-      .text("Balance $", 580, y);
-    y += 25;
-
-    // Table Data
+    // 4. Fill Data
     let runningBalance = 0;
-    reportData.forEach((row: ReportEntry) => {
-      runningBalance += row.debit - row.credit;
-      
-      doc.fontSize(10).font("Helvetica")
-        .text(row.date, 50, y, { width: 80 })
-        .text(row.description.substring(0, 25), 130, y, { width: 150 })
-        // .text((row.clientName || row.reference || "-").substring(0, 20), 280, y, { width: 170 })
-        .text(formatCurrency(row.debit), 450, y, { width: 70, align: "left" })
-        .text(formatCurrency(row.credit), 520, y, { width: 60, align: "left" })
-        .text(formatCurrency(runningBalance), 580, y, { width: 60, align: "left" });
-      
-      y += 20;
-      if (y > 700) {
-        doc.addPage();
-        y = 80;
-      }
+    reportData.forEach(row => {
+      // Calculate running balance if not pre-calculated
+      const dr = Number(row.debit || row.quantity || 0);
+      const cr = Number(row.credit || 0);
+      runningBalance += (dr - cr);
+
+      sheet.addRow([
+        row.date ? new Date(row.date).toLocaleDateString('en-GB') : '',
+        row.description || '',
+        dr,
+        cr,
+        row.balance || runningBalance
+      ]);
     });
 
-    // Summary
-    const totalDebit = reportData.reduce((sum, r) => sum + r.debit, 0);
-    doc.fontSize(14).font("Helvetica-Bold")
-      .text("TOTAL", 450, y + 30)
-      .text(formatCurrency(totalDebit), 520, y + 30, { width: 60, align: "right" })
-      .text(formatCurrency(runningBalance), 580, y + 30, { width: 60, align: "right" });
+    // 5. Set Headers and Send
+    res.setHeader(
+      'Content-Type', 
+      'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+    );
+    res.setHeader(
+      'Content-Disposition', 
+      `attachment; filename="${decodedType}_report_${new Date().toISOString().split('T')[0]}.xlsx"`
+    );
+    
+    await workbook.xlsx.write(res);
+    res.end();
 
-    doc.end();
   } catch (error) {
-    console.error("PDF Generation Error:", error);
-    res.status(500).json({ error: "Failed to generate PDF" });
+    console.error("Excel Error:", error);
+    if (!res.headersSent) {
+      res.status(500).json({ error: "Failed to export Excel" });
+    }
   }
 };

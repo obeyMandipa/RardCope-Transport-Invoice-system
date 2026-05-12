@@ -6,6 +6,7 @@ import api from "../utils/api";
 import type { Invoice } from "../types";
 import { IoIosClose } from "react-icons/io";
 import { IoDownloadOutline } from "react-icons/io5";
+import { FaFileExcel } from "react-icons/fa";
 import header from "../assets/header.png";
 
 
@@ -42,16 +43,37 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
 
   const handleDownload = async (id: string) => {
     try {
-      const { data } = await api.get(`/invoices/${id}`);
-      // Simulate PDF download
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
+      const response = await api.get(`/invoices/${id}/pdf`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+      const a = document.createElement("a");
       a.href = url;
-      a.download = `${data.invoiceNumber}.json`;
+      a.download = `INVOICE_${id}_${new Date().toISOString().split('T')[0]}.pdf`;
+      document.body.appendChild(a);
       a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
     } catch (error) {
       alert("Download failed");
+    }
+  };
+
+  const handleExcel = async (id: string) => {
+    try {
+      const response = await api.get(`/invoices/${id}/excel?noHeader=1`, { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = `INVOICE_${id}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
+      a.click();
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
+    } catch (error) {
+      alert("Excel export failed");
     }
   };
 
@@ -109,15 +131,29 @@ export const InvoiceList = ({ onRefresh }: { onRefresh: () => void }) => {
                     View
                   </button>
                   <button
-    onClick={() => {
-      if (confirm(`Delete ${invoice.invoiceNumber}?`)) {
-        handleDelete(invoice._id);
-      }
-    }}
-    className="text-red-400 px-3 py-1 rounded font-medium hover:text-red-600"
-  >
-    Delete
-  </button>
+                    onClick={() => handleDownload(invoice._id)}
+                    className="text-gray-400 px-3 py-1 rounded font-medium hover:text-gray-900 flex items-center gap-1"
+                    title="Download PDF"
+                  >
+                    <IoDownloadOutline className="text-lg" /> PDF
+                  </button>
+                  <button
+                    onClick={() => handleExcel(invoice._id)}
+                    className="text-green-600 px-3 py-1 rounded font-medium hover:text-white hover:bg-green-600 flex items-center gap-1"
+                    title="Export to Excel"
+                  >
+                    <FaFileExcel className="text-lg" /> Excel
+                  </button>
+                  <button
+                    onClick={() => {
+                      if (confirm(`Delete ${invoice.invoiceNumber}?`)) {
+                        handleDelete(invoice._id);
+                      }
+                    }}
+                    className="text-red-400 px-3 py-1 rounded font-medium hover:text-red-600"
+                  >
+                    Delete
+                  </button>
                 </td>
               </tr>
             ))}

@@ -37,7 +37,7 @@ export const StatementTable = ({ clientName }: Props) => {
     setLoading(true);
     setError("");
     try {
-      const { data } = await api.get(`/statements/${encodeURIComponent(clientName)}`);
+      const { data } = await api.get(`/runningstatements/${encodeURIComponent(clientName)}`);
       setData(data);
     } catch (err: any) {
       setError(err.response?.data?.error || "Failed to load statement");
@@ -50,7 +50,7 @@ export const StatementTable = ({ clientName }: Props) => {
   const downloadStatementPDF = async () => {
     try {
       // Backend PDF endpoint (add later)
-      const response = await api.get(`/statements/${encodeURIComponent(clientName)}/pdf`, {
+      const response = await api.get(`/runningstatements/${encodeURIComponent(clientName)}/pdf`, {
         responseType: 'blob'
       });
       

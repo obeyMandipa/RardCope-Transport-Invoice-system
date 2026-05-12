@@ -3,6 +3,7 @@ import { useState, useEffect } from "react";
 import api from "../utils/api";
 import type { Invoice, Client, CashBookEntry } from "../types";
 import { IoDownloadOutline } from "react-icons/io5";
+import { FaFileExcel } from "react-icons/fa";
 
 interface ReportFilters {
   client?: string;
@@ -13,7 +14,7 @@ interface ReportFilters {
 export const Reports = () => {
   const [clients, setClients] = useState<Client[]>([]);
   const [filters, setFilters] = useState<ReportFilters>({});
-  const [activeReport, setActiveReport] = useState<"statements" | "primary" | "petty" | "loads" | "invoices">("statements");
+  const [activeReport, setActiveReport] = useState<"runningstatements" | "cashbook" | "pettycashbook" | "loads" | "invoices">("runningstatements");
   const [data, setData] = useState<any>([]);
   const [loading, setLoading] = useState(false);
 
@@ -39,24 +40,52 @@ export const Reports = () => {
   };
 
   const downloadPDF = async (reportType: string) => {
+  try {
+    const params = new URLSearchParams();
+    if (filters.client) params.append("client", filters.client);
+    if (filters.startDate) params.append("startDate", filters.startDate);
+    if (filters.endDate) params.append("endDate", filters.endDate);
+    
+    const response = await api.get(`/reports/${reportType}/pdf?${params.toString()}`, {
+      responseType: "blob"
+    });
+    
+    const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `${reportType.replace('_', ' ').toUpperCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+    document.body.appendChild(a);
+    a.click();
+    setTimeout(() => {
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    }, 100);
+  } catch (error) {
+    alert("Download failed");
+  }
+};
+
+  const downloadExcel = async (reportType: string) => {
     try {
       const params = new URLSearchParams();
       if (filters.client) params.append("client", filters.client);
       if (filters.startDate) params.append("startDate", filters.startDate);
       if (filters.endDate) params.append("endDate", filters.endDate);
-      
-      const { data } = await api.get(`/reports/${reportType}/pdf?${params.toString()}`, {
-        responseType: "blob"
-      });
-      
-      const url = URL.createObjectURL(data);
+      params.append("noHeader", "1"); // Remove header row as requested
+      const response = await api.get(`/reports/${reportType}/excel?${params.toString()}`,
+        { responseType: "blob" });
+      const url = window.URL.createObjectURL(new Blob([response.data], { type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" }));
       const a = document.createElement("a");
       a.href = url;
-      a.download = `${reportType.replace('_', ' ').toUpperCase()}_${new Date().toISOString().split('T')[0]}.pdf`;
+      a.download = `${reportType.replace('_', ' ').toUpperCase()}_${new Date().toISOString().split('T')[0]}.xlsx`;
+      document.body.appendChild(a);
       a.click();
-      URL.revokeObjectURL(url);
+      setTimeout(() => {
+        window.URL.revokeObjectURL(url);
+        document.body.removeChild(a);
+      }, 100);
     } catch (error) {
-      alert("Download failed");
+      alert("Excel export failed");
     }
   };
 
@@ -75,9 +104,9 @@ export const Reports = () => {
 
         <div className="mb-4 space-x-4">
           {[
-            { id: "running statements", label: "Running Statements" },
+            { id: "runningstatements", label: "Running Statements" },
             { id: "cashbook", label: "Primary Cash Book" },
-            { id: "petty cashbook", label: "Petty Cash Book" },
+            { id: "pettycashbook", label: "Petty Cash Book" },
             { id: "loads", label: "Loads" },
             { id: "invoices", label: "Invoices" }
           ].map(tab => (
@@ -116,7 +145,7 @@ export const Reports = () => {
               </select>
             </div>
 
-            {["statements", "loads", "invoices"].includes(activeReport) && (
+            {["runningstatements", "loads", "invoices"].includes(activeReport) && (
               <>
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">Start Date</label>
@@ -147,13 +176,25 @@ export const Reports = () => {
             <h2 className="text-2xl font-bold text-gray-900 capitalize">
               {activeReport.replace('_', ' ')}
             </h2>
-            <button
-              onClick={() => downloadPDF(activeReport)}
-              className="flex items-center gap-2 px-6 py-3 bg-gray-300 hover:bg-gray-600 hover:text-white"
-            >
-              <IoDownloadOutline className="text-xl" />
-              Download PDF
-            </button>
+            
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => downloadPDF(activeReport)}
+                    className="flex items-center gap-2 px-6 py-3 bg-gray-300 hover:bg-gray-600 hover:text-white rounded"
+                    title="Download PDF"
+                  >
+                    <IoDownloadOutline className="text-xl" />
+                    PDF
+                  </button>
+                  <button
+                    onClick={() => downloadExcel(activeReport)}
+                    className="flex items-center gap-2 px-6 py-3 bg-green-200 hover:bg-green-600 hover:text-white rounded"
+                    title="Export to Excel"
+                  >
+                    <FaFileExcel className="text-xl" />
+                    Excel
+                  </button>
+                </div>
           </div>
 
           {loading ? (
@@ -175,7 +216,7 @@ export const Reports = () => {
                         <th className="border-l-2 px-6 py-4 text-left font-normal text-gray-900 uppercase tracking-wider">
                           Client Name
                         </th>
-                        <th className="border-l-2 px-6 py-4 text-left font-normaluppercase tracking-wider">
+                        <th className="border-l-2 px-6 py-4 text-left font-normal uppercase tracking-wider">
                           Description
                         </th>
                         <th className="border-l-2 px-6 py-4 text-rightnormal font-normal uppercase tracking-wider">
@@ -194,7 +235,7 @@ export const Reports = () => {
                           Date
                         </th>
                         <th className="border-l-2 px-6 py-4 text-left font-normal uppercase">
-                          Transaction / Invoice
+                          Transaction Details
                         </th>
                         <th className="border-l-2 px-6 py-4 text-right font-normal uppercase tracking-wider">
                           Amount
@@ -222,7 +263,8 @@ export const Reports = () => {
                             {row.clientName || row.client?.name || '-'}
                           </td>
                           <td className="border-l-2 px-6 py-4 text-sm text-gray-900 max-w-md">
-                            {row.description || row.invoiceNumber || '-'}
+                            {row.description || '-'}
+                            {/* {row.description || row.invoiceNumber || '-'} */}
                           </td>
                           <td className="border-l-2 px-6 py-4 text-right text-sm font-bold text-gray-700">
                             {row.quantity?.toLocaleString() || row.debit?.toLocaleString() || '-'}t
@@ -241,11 +283,7 @@ export const Reports = () => {
                             {new Date(row.date || row.createdAt).toLocaleDateString()}
                           </td>
                           <td className="border-l-2 px-6 py-4 text-sm">
-                            <span className={`inline-block px-2 py-1 ${
-                              row.type === 'invoice' 
-                            }`}>
-                              {row.description}
-                            </span>
+                            <span > {row.description} </span>
                             <div className="text-sm text-gray-600 mt-1">{row.details}</div>
                           </td>
                           <td className="border-l-2 px-6 py-4 text-right text-sm font-normal text">
@@ -285,8 +323,8 @@ export const Reports = () => {
               </table>
             </div>
           )}
-        </div>
       </div>
+     </div>
     </div>
   );
 };
