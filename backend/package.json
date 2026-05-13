@@ -3,8 +3,8 @@
   "version": "1.0.0",
   "main": "server.tsx",
   "scripts": {
-    "start": "tsx server.ts",
-    "dev": "nodemon --exec ts-node server.ts"
+    "dev": "nodemon --exec ts-node server.ts",
+    "start": "npx tsx server.ts"
   },
   "keywords": [],
   "author": "",
