@@ -64,23 +64,23 @@ export const CashBooks = () => {
     <div className="">
       <h1 className="text-[40px] mb-4">Cash Books</h1>
 
-      <div className="flex w-[500px] p-1 mb-4">
+      <div className="flex w-[500px] p-1 mb-4 space-x-4">
         <button
           onClick={() => setActiveTab("primary")}
-          className={`flex-1 py-2 px-2 font-semibold transition-all ${
+          className={`flex-1 py-2 px-2 font-normal rounded-full transition-all ${
             activeTab === "primary"
-              ? "bg-red-800 text-white shadow-xl"
-              : "text-gray-600 hover:text-red-800 hover:bg-gray-50"
+              ? "bg-blue-950 text-white "
+              : "text-gray-600 hover:text-blue-950 hover:bg-gray-50 border-2 border-blue-950 "
           }`}
         >
           Primary Cash Book
         </button>
         <button
           onClick={() => setActiveTab("petty")}
-          className={`flex-1 py-2 px-2 font-semibold transition-all ${
+          className={`flex-1 py-2 px-2 text-[18px] font-normal rounded-full transition-all ${
             activeTab === "petty"
-              ? "bg-red-800 text-white shadow-xl"
-              : "text-gray-600 hover:text-red-800 hover:bg-gray-50"
+              ? "bg-blue-950 text-white shadow-xl"
+              : "text-gray-600 hover:text-blue-950 hover:bg-gray-50 border-2 border-blue-950"
           }`}
         >
           Petty Cash Book

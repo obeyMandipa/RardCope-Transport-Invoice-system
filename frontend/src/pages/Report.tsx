@@ -102,7 +102,7 @@ export const Reports = () => {
       <div className="">
         <h1 className="text-[40px] mb-8">Reports</h1>
 
-        <div className="mb-4 space-x-4">
+        <div className="mb-4 space-x-4 ">
           {[
             { id: "runningstatements", label: "Running Statements" },
             { id: "cashbook", label: "Primary Cash Book" },
@@ -113,10 +113,10 @@ export const Reports = () => {
             <button
               key={tab.id}
               onClick={() => setActiveReport(tab.id as any)}
-              className={`p-2 w-[200px] font-semibold transition-all ${
+              className={`p-2 w-[200px]  font-normal text-[18px] rounded-full transition-all ${
                 activeReport === tab.id
-                  ? "text-white bg-red-900"
-                  : "bg-white text-gray-700 hover:text-red-900 hover:bg-gray-50"
+                  ? "text-white bg-blue-950  font-normal "
+                  : "bg-white text-gray-700 hover:text-blue-950 hover:bg-gray-50  border-2 border-blue-950 "
               }`}
             >
               {tab.label}

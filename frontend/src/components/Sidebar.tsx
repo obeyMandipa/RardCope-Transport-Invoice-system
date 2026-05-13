@@ -29,7 +29,7 @@ export const Sidebar = () => {
   const location = useLocation();
 
   return (
-    <div className="w-64 h-screen bg-red-900 text-white p-4 ">
+    <div className="w-64 h-screen bg-blue-950 text-white p-4 bg-blu ">
       <div className="mb-8">
         <h1 className="text-2xl font-bold">RardCope Invoice</h1>
       </div>

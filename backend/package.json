@@ -3,8 +3,9 @@
   "version": "1.0.0",
   "main": "server.tsx",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "nodemon --exec ts-node server.tsx"
+    "build": "tsc",
+    "start": "node dist/server.js",
+    "dev": "nodemon --exec ts-node server.ts"
   },
   "keywords": [],
   "author": "",
