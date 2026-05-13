@@ -1,11 +1,10 @@
 {
   "name": "backend",
   "version": "1.0.0",
-  "main": "dist/server.js",
+  "main": "server.tsx",
   "scripts": {
-    "build": "tsc",
-    "start": "node dist/server.js",
-    "dev": "nodemon --exec ts-node server.ts"
+    "dev": "nodemon --exec ts-node server.ts",
+    "start": "npx tsx server.ts"
   },
   "keywords": [],
   "author": "",
